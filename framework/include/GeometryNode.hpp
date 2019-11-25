@@ -14,6 +14,7 @@ class GeometryNode: public Node
 {
     public:
         GeometryNode();
+        GeometryNode(model geometry);
         ~GeometryNode();
 
         model getGeometry();

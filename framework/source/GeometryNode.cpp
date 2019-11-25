@@ -4,6 +4,10 @@ GeometryNode::GeometryNode():
     geometry_{}
 {}
 
+GeometryNode::GeometryNode(model geometry):
+    geometry_{geometry}
+{}
+
 GeometryNode::~GeometryNode() {
  
 }

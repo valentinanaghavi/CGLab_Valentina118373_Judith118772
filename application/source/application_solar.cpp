@@ -4,6 +4,10 @@
 #include "utils.hpp"
 #include "shader_loader.hpp"
 #include "model_loader.hpp"
+#include "SceneGraph.hpp"
+#include "Node.hpp"
+#include "GeometryNode.hpp"
+#include "CameraNode.hpp"
 
 #include <glbinding/gl/gl.h>
 // use gl definitions from glbinding 
@@ -26,7 +30,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
   initializeGeometry();
-  initializeSceneGraph();
+  //initializeSceneGraph();
   initializeShaderPrograms();
 }
 
@@ -40,7 +44,7 @@ void ApplicationSolar::render() const {
   // bind shader to upload uniforms
   glUseProgram(m_shaders.at("planet").handle);
 
-  glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});
+  glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()*1000), glm::fvec3{0.0f, 1.0f, 0.0f});
   model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, -1.0f});
   glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                      1, GL_FALSE, glm::value_ptr(model_matrix));
@@ -94,7 +98,70 @@ void ApplicationSolar::initializeShaderPrograms() {
 }
 
 void ApplicationSolar::initializeSceneGraph() {
+
+  std::shared_ptr<Node> root;
+  SceneGraph sceneGraph{"SolarSystem", root};
+
   model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
+
+  std::shared_ptr<GeometryNode>mercury;
+  mercury -> setGeometry(planet_model); 
+  mercury->setLocalTransform(glm::scale({}, glm::fvec3{ 0.5f,0.5f,0.5f }));
+  root -> addChildren(mercury);
+
+  // //GeometryNode venus(planet_model);
+  // std::shared_ptr<GeometryNode>venus;
+  // venus -> setGeometry(planet_model); 
+  // venus->setLocalTransform(glm::scale({}, glm::fvec3{ 0.5f,0.5f,0.5f }));
+  // root -> addChildren(venus);
+
+/*   //GeometryNode earth(planet_model);
+  std::shared_ptr<GeometryNode>earth;
+  earth -> setGeometry(planet_model); 
+  root -> addChildren(earth);
+
+  //GeometryNode mars(planet_model);
+  std::shared_ptr<GeometryNode>mars;
+  mars -> setGeometry(planet_model); 
+  root -> addChildren(mars);
+
+  //GeometryNode jupiter(planet_model);
+  std::shared_ptr<GeometryNode>jupiter;
+  jupiter -> setGeometry(planet_model); 
+  root -> addChildren(jupiter);
+
+  //GeometryNode saturn(planet_model);
+  std::shared_ptr<GeometryNode>saturn;
+  saturn -> setGeometry(planet_model); 
+  root -> addChildren(saturn);
+
+  //GeometryNode uranus(planet_model);
+  std::shared_ptr<GeometryNode>uranus;
+  uranus -> setGeometry(planet_model); 
+  root -> addChildren(uranus);
+
+  //GeometryNode neptun(planet_model);
+  std::shared_ptr<GeometryNode>neptun;
+  neptun -> setGeometry(planet_model); 
+  root -> addChildren(neptun);
+
+  //GeometryNode moon(planet_model);
+  std::shared_ptr<GeometryNode>moon;
+  moon -> setGeometry(planet_model); 
+  root -> addChildren(moon);
+
+  //GeometryNode sun(planet_model);
+  std::shared_ptr<GeometryNode>sun;
+  sun -> setGeometry(planet_model); 
+  root -> addChildren(sun);
+ */
+  // TO DO:
+  // scenegraph erstellen
+  // wer ist root ? 
+  // planeten erstellen und der Liste hinzufügen
+
+  // diese Methode wird im Konstruktor aufgerufen
+  // in render() diese Daten verwenden 
 
 
 }
