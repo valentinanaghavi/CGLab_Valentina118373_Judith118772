@@ -5,6 +5,11 @@
 #include "model.hpp"
 #include "structs.hpp"
 
+#include "SceneGraph.hpp"
+#include "Node.hpp"
+#include "GeometryNode.hpp"
+#include "CameraNode.hpp"
+
 // gpu representation of model
 class ApplicationSolar : public Application {
  public:
@@ -36,6 +41,8 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object planet_object;
+
+  SceneGraph scene_graph;
   
   // camera transform matrix
   glm::fmat4 m_view_transform;

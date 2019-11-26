@@ -3,30 +3,30 @@
 SceneGraph::SceneGraph():
     name_{"SceneGraph"},
     root_{}
-{};
+{}
 
 SceneGraph::SceneGraph(std::string name, std::shared_ptr<Node> root):
     name_{name},
     root_{root}
-{};
+{}
 
 SceneGraph::~SceneGraph() {
  
 }
 
-std::string SceneGraph::getName(){
+std::string SceneGraph::getName() const {
     return name_;
 }
 
-void SceneGraph::setName(std::string name){
+void SceneGraph::setName(std::string const& name){
     name_ = name;
 }
 
-std::shared_ptr<Node> SceneGraph::getRoot(){
+std::shared_ptr<Node> SceneGraph::getRoot() const {
     return root_;
 }
 
-void SceneGraph::setRoot(std::shared_ptr<Node> root){
+void SceneGraph::setRoot(std::shared_ptr<Node> const& root){
     root_ = root;
 }
 

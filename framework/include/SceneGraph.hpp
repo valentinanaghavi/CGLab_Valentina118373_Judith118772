@@ -12,15 +12,15 @@ class SceneGraph
         SceneGraph(std::string name, std::shared_ptr<Node> root);
         ~SceneGraph();
 
-        std::string getName();
-        std::shared_ptr<Node> getRoot();
+        std::string getName() const;
+        std::shared_ptr<Node> getRoot() const;
 
         std::string printGraph();
 
     private:
 
-        void setName(std::string name);
-        void setRoot(std::shared_ptr<Node> root);
+        void setName(std::string const& name);
+        void setRoot(std::shared_ptr<Node> const& root);
 
         std::string name_;
         std::shared_ptr<Node> root_;
