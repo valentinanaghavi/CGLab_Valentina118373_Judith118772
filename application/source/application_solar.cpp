@@ -46,9 +46,11 @@ void ApplicationSolar::render() const {
     
     counter += 1;
     //std::cout << i -> getName() /*<< counter*/;
-  
-    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});//speed
-    model_matrix =  /*i -> getLocalTransform() * */ glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, -1.0f} * glm::fvec3{counter, counter, counter}); //distance
+    float speed = i -> getSpeed();
+    float distance = i -> getDistance();
+
+    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+    model_matrix =  /*i -> getLocalTransform() * */ glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
 
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                        1, GL_FALSE, glm::value_ptr(model_matrix));
@@ -117,60 +119,80 @@ void ApplicationSolar::initializeSceneGraph() {
   auto mercury_holder = std::make_shared<Node>(mercury);
   mercury_holder -> setName("mercury");
   mercury_holder -> setParent(root);
+  mercury_holder -> setDistance(4.5f); //distance to origin
+  mercury_holder -> setSpeed(0.6f); //rotation speed
   root -> addChildren(mercury_holder);
 
   GeometryNode venus (planet_model);
   auto venus_holder = std::make_shared<Node>(venus);
   venus_holder -> setName("venus");
   venus_holder -> setParent(root);
+  venus_holder -> setDistance(8.5f); //distance to origin
+  venus_holder -> setSpeed(0.5f); //rotation speed
   root -> addChildren(venus_holder);
 
   GeometryNode mars (planet_model);
   auto mars_holder = std::make_shared<Node>(mars);
   mars_holder -> setName("mars");
   mars_holder -> setParent(root);
+  mars_holder -> setDistance(15.0f); //distance to origin
+  mars_holder -> setSpeed(0.4f); //rotation speed
   root -> addChildren(mars_holder);
 
   GeometryNode jupiter (planet_model);
   auto jupiter_holder = std::make_shared<Node>(jupiter);
   jupiter_holder -> setName("jupiter");
   jupiter_holder -> setParent(root);
+  jupiter_holder -> setDistance(20.0f); //distance to origin
+  jupiter_holder -> setSpeed(0.25f); //rotation speed
   root -> addChildren(jupiter_holder);
 
   GeometryNode saturn (planet_model);
   auto saturn_holder = std::make_shared<Node>(saturn);
   saturn_holder -> setName("saturn");
   saturn_holder -> setParent(root);
+  saturn_holder -> setDistance(26.0f); //distance to origin
+  saturn_holder -> setSpeed(0.2f); //rotation speed
   root -> addChildren(saturn_holder);
 
   GeometryNode uranus (planet_model);
   auto uranus_holder = std::make_shared<Node>(uranus);
   uranus_holder -> setName("uranus");
   uranus_holder -> setParent(root);
+  uranus_holder -> setDistance(33.0f); //distance to origin
+  uranus_holder -> setSpeed(0.15f); //rotation speed
   root -> addChildren(uranus_holder);
 
   GeometryNode neptun (planet_model);
   auto neptun_holder = std::make_shared<Node>(neptun);
   neptun_holder -> setName("neptun");
   neptun_holder -> setParent(root);
+  neptun_holder -> setDistance(40.0f); //distance to origin
+  neptun_holder -> setSpeed(0.1f); //rotation speed
   root -> addChildren(neptun_holder);
 
   GeometryNode sun (planet_model);
   auto sun_holder = std::make_shared<Node>(sun);
   sun_holder -> setName("sun");
   sun_holder -> setParent(root);
+  sun_holder -> setDistance(0.0f); //distance to origin
+  sun_holder -> setSpeed(0.1f); //rotation speed
   root -> addChildren(sun_holder);
 
   GeometryNode earth (planet_model);
   auto earth_holder = std::make_shared<Node>(earth);
   earth_holder -> setName("earth");
   earth_holder -> setParent(root);
+  earth_holder -> setDistance(11.8f); //distance to origin
+  earth_holder -> setSpeed(0.45f); //r0fotation speed
   root -> addChildren(earth_holder);
   
   GeometryNode moon (planet_model);
   auto moon_holder = std::make_shared<Node>(moon);
   moon_holder -> setName("moon");
   moon_holder -> setParent(earth_holder);
+  moon_holder -> setDistance(10); //distance to origin
+  moon_holder -> setSpeed(0.0f); //rotation speed
   earth_holder -> addChildren(moon_holder);
 
 

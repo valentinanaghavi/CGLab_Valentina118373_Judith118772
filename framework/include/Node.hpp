@@ -35,6 +35,12 @@ class Node
         std::string getPath();
         int getDepth();
 
+        void setSpeed(float speed);
+        float getSpeed();
+
+        void setDistance(float distance);
+        float getDistance();
+
         glm::mat4 getLocalTransform();
         void setLocalTransform(glm::mat4 matrix_in);
 
@@ -54,6 +60,9 @@ class Node
         int depth_;
         glm::mat4 localTransform_;
         glm::mat4 worldTransform_;
+
+        float speed_;
+        float distance_;
 
 };
 

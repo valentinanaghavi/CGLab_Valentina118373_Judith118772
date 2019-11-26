@@ -61,6 +61,20 @@ int Node::getDepth(){
     return depth_;
 }
 
+void Node::setSpeed(float speed){
+    speed_ = speed;
+}
+float Node::getSpeed(){
+    return speed_;
+}
+
+void Node::setDistance(float distance){
+    distance_ = distance;
+}
+float Node::getDistance(){
+    return distance_;
+}
+
 glm::mat4 Node::getLocalTransform(){
     return localTransform_;
 }
