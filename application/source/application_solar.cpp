@@ -127,64 +127,46 @@ void ApplicationSolar::initializeSceneGraph() {
   auto root = std::make_shared<Node>();
 
 
-  auto mercury = std::make_shared<GeometryNode>(planet_model);
-  // //std::shared_ptr<GeometryNode>mercury;
-  // //mercury -> setGeometry(planet_model); 
-  root -> addChildren(mercury);
+  
+  GeometryNode mercury (planet_model);
+  auto mercury_holder = std::make_shared<Node>(mercury);
+  root -> addChildren(mercury_holder);
 
-  auto venus = std::make_shared<GeometryNode>(planet_model);
-  // //GeometryNode venus(planet_model);
-  // std::shared_ptr<GeometryNode>venus;
-  // venus -> setGeometry(planet_model); 
-  root -> addChildren(venus);
+  GeometryNode venus (planet_model);
+  auto venus_holder = std::make_shared<Node>(venus);
+  root -> addChildren(venus_holder);
 
-  auto earth = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode earth(planet_model);
-  // std::shared_ptr<GeometryNode>earth;
-  // earth -> setGeometry(planet_model); 
-  root -> addChildren(earth);
+  GeometryNode earth (planet_model);
+  auto earth_holder = std::make_shared<Node>(earth);
+  root -> addChildren(earth_holder);
 
-  auto mars = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode mars(planet_model);
-  // std::shared_ptr<GeometryNode>mars;
-  // mars -> setGeometry(planet_model); 
-  root -> addChildren(mars);
+  GeometryNode mars (planet_model);
+  auto mars_holder = std::make_shared<Node>(mars);
+  root -> addChildren(mars_holder);
 
-  auto jupiter = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode jupiter(planet_model);
-  // std::shared_ptr<GeometryNode>jupiter;
-  // jupiter -> setGeometry(planet_model); 
-  root -> addChildren(jupiter);
+  GeometryNode jupiter (planet_model);
+  auto jupiter_holder = std::make_shared<Node>(jupiter);
+  root -> addChildren(jupiter_holder);
 
-  auto saturn = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode saturn(planet_model);
-  // std::shared_ptr<GeometryNode>saturn;
-  // saturn -> setGeometry(planet_model); 
-  root -> addChildren(saturn);
+  GeometryNode saturn (planet_model);
+  auto saturn_holder = std::make_shared<Node>(saturn);
+  root -> addChildren(saturn_holder);
 
-  auto uranus = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode uranus(planet_model);
-  // std::shared_ptr<GeometryNode>uranus;
-  // uranus -> setGeometry(planet_model); 
-  root -> addChildren(uranus);
+  GeometryNode uranus (planet_model);
+  auto uranus_holder = std::make_shared<Node>(uranus);
+  root -> addChildren(uranus_holder);
 
-  auto neptun = std::make_shared<GeometryNode>(planet_model);
-  // //GeometryNode neptun(planet_model);
-  // std::shared_ptr<GeometryNode>neptun;
-  // neptun -> setGeometry(planet_model); 
-  root -> addChildren(neptun);
+  GeometryNode neptun (planet_model);
+  auto neptun_holder = std::make_shared<Node>(neptun);
+  root -> addChildren(neptun_holder);
 
-  auto moon = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode moon(planet_model);
-  // std::shared_ptr<GeometryNode>moon;
-  // moon -> setGeometry(planet_model); 
-  root -> addChildren(moon);
+  GeometryNode moon (planet_model);
+  auto moon_holder = std::make_shared<Node>(moon);
+  root -> addChildren(moon_holder);
 
-  auto sun = std::make_shared<GeometryNode>(planet_model);
-  //GeometryNode sun(planet_model);
-  // std::shared_ptr<GeometryNode>sun;
-  // sun -> setGeometry(planet_model); 
-  root -> addChildren(sun);
+  GeometryNode sun (planet_model);
+  auto sun_holder = std::make_shared<Node>(sun);
+  root -> addChildren(sun_holder);
 
 
   SceneGraph sceneGraph_tmp{"SolarSystem", root};
