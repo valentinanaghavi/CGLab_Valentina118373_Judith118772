@@ -41,35 +41,114 @@ void ApplicationSolar::render() const {
   // bind shader to upload uniforms
   glUseProgram(m_shaders.at("planet").handle);
 
-  int counter = 0; // test for planet rendering
-  for (auto const& i : scene_graph.getRoot() -> getChildrenList()) {
+  //int counter = 0; // test for planet rendering
+  for (auto const& child : scene_graph.getRoot() -> getChildrenList()) {
     
-    counter += 1;
+    //counter += 1;
     //std::cout << i -> getName() /*<< counter*/;
-    float speed = i -> getSpeed();
-    float distance = i -> getDistance();
+      float speed = child -> getSpeed();
+      float distance = child -> getDistance();
 
-    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
-    model_matrix =  /*i -> getLocalTransform() * */ glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
+      glm::fmat4 model_matrix = child -> getLocalTransform();
 
-    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
-                       1, GL_FALSE, glm::value_ptr(model_matrix));
+      model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+      model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
 
-    // extra matrix for normal transformation to keep them orthogonal to surface
-    glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
-    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
-                       1, GL_FALSE, glm::value_ptr(normal_matrix)); 
+      child -> setLocalTransform(model_matrix);
 
-    // bind the VAO to draw
-    glBindVertexArray(planet_object.vertex_AO);
+      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
+                         1, GL_FALSE, glm::value_ptr(model_matrix));
 
-    // draw bound vertex array using bound shader
-    glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
+      // extra matrix for normal transformation to keep them orthogonal to surface
+      glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
+      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
+                         1, GL_FALSE, glm::value_ptr(normal_matrix)); 
+
+      // bind the VAO to draw
+      glBindVertexArray(planet_object.vertex_AO);
+
+      // draw bound vertex array using bound shader
+      glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
+    
+    if(child -> getName() == "earth"){
+      
+      glm::fmat4 model_matrix = child -> getLocalTransform();
+      float speed = child -> getSpeed();
+      float distance = child -> getDistance();
+      model_matrix = glm::rotate(model_matrix, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+      model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
+
+      //child -> setLocalTransform(model_matrix);
+      
+      for (auto const& earth_children : child -> getChildrenList()){
+
+        //glm::fmat4 model_matrix_earth_child = child -> getLocalTransform();
+        float speed_child = earth_children -> getSpeed();
+        float distance_child = earth_children -> getDistance();
+
+        glm::fmat4 model_matrix_earth_child = glm::rotate(model_matrix * earth_children -> getLocalTransform(), float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+        //model_matrix =                        glm::rotate(model_matrix, float(glfwGetTime())*(child->getParent()->getSpeed()), glm::fvec3{0.0f, 1.0f, 0.0f});
+        model_matrix_earth_child = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
+          //                        glm::translate(model_matrix, child->getParent()->getPosition());
+
+
+        earth_children -> setLocalTransform(model_matrix_earth_child);
+
+        glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
+                         1, GL_FALSE, glm::value_ptr(model_matrix_earth_child));
+
+        // extra matrix for normal transformation to keep them orthogonal to surface
+        glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix_earth_child); 
+        glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
+                          1, GL_FALSE, glm::value_ptr(normal_matrix)); 
+
+        // bind the VAO to draw
+        glBindVertexArray(planet_object.vertex_AO);
+
+        // draw bound vertex array using bound shader
+        glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
+
+      }
+      //child -> getChildrenList();
+      //parent data as origin
+      // std::shared_ptr<Node> parent = child -> getParent();
+      // glm::fmat4 model_matrix = parent -> getLocalTransform();
+      // float speed = parent -> getSpeed();
+      // float distance = parent -> getDistance();
+      // model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+      // model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
+
+      // child -> setLocalTransform(model_matrix);
+
+      //child 
+      // glm::fmat4 model_matrix_child = child -> getLocalTransform();
+      // float speed_child = child -> getSpeed();
+      // float distance_child = child -> getDistance();
+
+      // model_matrix_child = glm::rotate(glm::fmat4{}, float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+      // model_matrix_child = glm::translate(model_matrix_child, glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
+
+      // glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
+      //                    1, GL_FALSE, glm::value_ptr(model_matrix_child));
+
+      // // extra matrix for normal transformation to keep them orthogonal to surface
+      // glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix_child); 
+      // glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
+      //                    1, GL_FALSE, glm::value_ptr(normal_matrix)); 
+
+      // // bind the VAO to draw
+      // glBindVertexArray(planet_object.vertex_AO);
+
+      // // draw bound vertex array using bound shader
+      // glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
+
+    } //end if
+
 
   } //end loop
 
 
-}
+} //end function
 
 void ApplicationSolar::uploadView() {
   // vertices are transformed in camera space, so camera transform must be inverted
@@ -115,7 +194,7 @@ void ApplicationSolar::initializeSceneGraph() {
 
 
   
-  GeometryNode mercury (planet_model);
+/*   GeometryNode mercury (planet_model);
   auto mercury_holder = std::make_shared<Node>(mercury);
   mercury_holder -> setName("mercury");
   mercury_holder -> setParent(root);
@@ -169,7 +248,7 @@ void ApplicationSolar::initializeSceneGraph() {
   neptun_holder -> setParent(root);
   neptun_holder -> setDistance(40.0f); //distance to origin
   neptun_holder -> setSpeed(0.1f); //rotation speed
-  root -> addChildren(neptun_holder);
+  root -> addChildren(neptun_holder); */
 
   GeometryNode sun (planet_model);
   auto sun_holder = std::make_shared<Node>(sun);
@@ -183,7 +262,7 @@ void ApplicationSolar::initializeSceneGraph() {
   auto earth_holder = std::make_shared<Node>(earth);
   earth_holder -> setName("earth");
   earth_holder -> setParent(root);
-  earth_holder -> setDistance(11.8f); //distance to origin
+  earth_holder -> setDistance(20.0f); //distance to origin
   earth_holder -> setSpeed(0.45f); //r0fotation speed
   root -> addChildren(earth_holder);
   
@@ -191,9 +270,9 @@ void ApplicationSolar::initializeSceneGraph() {
   auto moon_holder = std::make_shared<Node>(moon);
   moon_holder -> setName("moon");
   moon_holder -> setParent(earth_holder);
-  moon_holder -> setDistance(10); //distance to origin
-  moon_holder -> setSpeed(0.0f); //rotation speed
-  earth_holder -> addChildren(moon_holder);
+  moon_holder -> setDistance(2.0f); //distance to origin
+  moon_holder -> setSpeed(2.0f); //rotation speed
+  earth_holder  -> addChildren(moon_holder);
 
 
 
