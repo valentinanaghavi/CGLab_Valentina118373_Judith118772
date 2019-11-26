@@ -45,6 +45,10 @@ std::list<std::shared_ptr<Node>> Node::getChildrenList(){
     return children_;
 }
 
+void Node::setName(std::string name){
+    name_ = name;
+}
+
 std::string Node::getName(){
     return name_;
 }

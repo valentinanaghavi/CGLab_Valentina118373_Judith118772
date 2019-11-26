@@ -41,37 +41,22 @@ void ApplicationSolar::render() const {
   // bind shader to upload uniforms
   glUseProgram(m_shaders.at("planet").handle);
 
-  // glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});
-  // model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, -1.0f});
-  // glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
-  //                    1, GL_FALSE, glm::value_ptr(model_matrix));
-
-  // // extra matrix for normal transformation to keep them orthogonal to surface
-  // glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix);
-  // glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"),
-  //                    1, GL_FALSE, glm::value_ptr(normal_matrix));
-
-  // // bind the VAO to draw
-  // glBindVertexArray(planet_object.vertex_AO);
-
-  // // draw bound vertex array using bound shader
-  // glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
-  
   int counter = 0; // test for planet rendering
   for (auto const& i : scene_graph.getRoot() -> getChildrenList()) {
     
     counter += 1;
-    std::cout << i -> getName() /*<< counter*/;
+    //std::cout << i -> getName() /*<< counter*/;
   
-    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});
-    model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, -counter});
+    glm::fmat4 model_matrix = glm::rotate(glm::fmat4{}, float(glfwGetTime()), glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+    model_matrix =  /*i -> getLocalTransform() * */ glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, -1.0f} * glm::fvec3{counter, counter, counter}); //distance
+
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                        1, GL_FALSE, glm::value_ptr(model_matrix));
 
     // extra matrix for normal transformation to keep them orthogonal to surface
-    glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix);
-    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"),
-                       1, GL_FALSE, glm::value_ptr(normal_matrix));
+    glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
+    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
+                       1, GL_FALSE, glm::value_ptr(normal_matrix)); 
 
     // bind the VAO to draw
     glBindVertexArray(planet_object.vertex_AO);
@@ -130,44 +115,72 @@ void ApplicationSolar::initializeSceneGraph() {
   
   GeometryNode mercury (planet_model);
   auto mercury_holder = std::make_shared<Node>(mercury);
+  mercury_holder -> setName("mercury");
+  mercury_holder -> setParent(root);
   root -> addChildren(mercury_holder);
 
   GeometryNode venus (planet_model);
   auto venus_holder = std::make_shared<Node>(venus);
+  venus_holder -> setName("venus");
+  venus_holder -> setParent(root);
   root -> addChildren(venus_holder);
-
-  GeometryNode earth (planet_model);
-  auto earth_holder = std::make_shared<Node>(earth);
-  root -> addChildren(earth_holder);
 
   GeometryNode mars (planet_model);
   auto mars_holder = std::make_shared<Node>(mars);
+  mars_holder -> setName("mars");
+  mars_holder -> setParent(root);
   root -> addChildren(mars_holder);
 
   GeometryNode jupiter (planet_model);
   auto jupiter_holder = std::make_shared<Node>(jupiter);
+  jupiter_holder -> setName("jupiter");
+  jupiter_holder -> setParent(root);
   root -> addChildren(jupiter_holder);
 
   GeometryNode saturn (planet_model);
   auto saturn_holder = std::make_shared<Node>(saturn);
+  saturn_holder -> setName("saturn");
+  saturn_holder -> setParent(root);
   root -> addChildren(saturn_holder);
 
   GeometryNode uranus (planet_model);
   auto uranus_holder = std::make_shared<Node>(uranus);
+  uranus_holder -> setName("uranus");
+  uranus_holder -> setParent(root);
   root -> addChildren(uranus_holder);
 
   GeometryNode neptun (planet_model);
   auto neptun_holder = std::make_shared<Node>(neptun);
+  neptun_holder -> setName("neptun");
+  neptun_holder -> setParent(root);
   root -> addChildren(neptun_holder);
-
-  GeometryNode moon (planet_model);
-  auto moon_holder = std::make_shared<Node>(moon);
-  root -> addChildren(moon_holder);
 
   GeometryNode sun (planet_model);
   auto sun_holder = std::make_shared<Node>(sun);
+  sun_holder -> setName("sun");
+  sun_holder -> setParent(root);
   root -> addChildren(sun_holder);
 
+  GeometryNode earth (planet_model);
+  auto earth_holder = std::make_shared<Node>(earth);
+  earth_holder -> setName("earth");
+  earth_holder -> setParent(root);
+  root -> addChildren(earth_holder);
+  
+  GeometryNode moon (planet_model);
+  auto moon_holder = std::make_shared<Node>(moon);
+  moon_holder -> setName("moon");
+  moon_holder -> setParent(earth_holder);
+  earth_holder -> addChildren(moon_holder);
+
+
+
+
+  //CameraNode camera ();
+  auto camera = std::make_shared<CameraNode>();
+  camera -> setParent(root);
+  camera -> setName("camera");
+  root -> addChildren(camera);
 
   SceneGraph sceneGraph_tmp{"SolarSystem", root};
   scene_graph = sceneGraph_tmp;

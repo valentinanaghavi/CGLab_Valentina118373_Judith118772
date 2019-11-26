@@ -30,6 +30,7 @@ class Node
         std::shared_ptr<Node> getChildren(std::string name);
         std::list<std::shared_ptr<Node>> getChildrenList();
 
+        void setName(std::string name);
         std::string getName();
         std::string getPath();
         int getDepth();
