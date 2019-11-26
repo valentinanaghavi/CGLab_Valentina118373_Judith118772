@@ -41,6 +41,9 @@ class Node
         void setDistance(float distance);
         float getDistance();
 
+        void setSize(float size);
+        float getSize();
+        
         glm::mat4 getLocalTransform();
         void setLocalTransform(glm::mat4 matrix_in);
 
@@ -63,6 +66,7 @@ class Node
 
         float speed_;
         float distance_;
+        float size_;
 
 };
 

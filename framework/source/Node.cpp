@@ -75,6 +75,14 @@ float Node::getDistance(){
     return distance_;
 }
 
+void Node::setSize(float size){
+    size_ = size;
+}
+float Node::getSize(){
+    return size_;
+}
+
+
 glm::mat4 Node::getLocalTransform(){
     return localTransform_;
 }
