@@ -10,20 +10,6 @@ Node::Node():
     worldTransform_{}
 {}
 
-/* Node::Node(        
-    std::shared_ptr<Node> parent,
-    std::list<std::shared_ptr<Node>>children,
-    std::string name, std::string path, int depth,
-    glm::mat4 localTransform, glm::mat4 worldTransform):
-    parent_{parent},
-    children_{children},
-    name_{name},
-    path_{path},
-    depth_{depth},
-    localTransform_{localTransform},
-    worldTransform_{worldTransform}
-{} */
-
 Node::~Node() {
  
 }
@@ -37,8 +23,18 @@ void Node::setParent(std::shared_ptr<Node> parent){
 }
 
 std::shared_ptr<Node> Node::getChildren(std::string name){
-    auto it = std::find_if(children_.begin(), children_.end(), [name](const std::shared_ptr<Node> child) 
-    {return child -> getName() == name;});
+   // auto list -> getChildrenlist;
+    for(auto const& child : this -> getChildrenList()){
+        if(child -> getName() == name){
+            return child;
+        }
+    }
+    return nullptr;
+
+    //lambda function to get children
+    // auto it = std::find_if(children_.begin(), children_.end(), [name](const std::shared_ptr<Node> child) 
+    // {return child -> getName() == name;});
+
 }
 
 std::list<std::shared_ptr<Node>> Node::getChildrenList(){
