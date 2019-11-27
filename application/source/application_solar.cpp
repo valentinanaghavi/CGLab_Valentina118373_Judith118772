@@ -26,6 +26,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  ,m_view_transform{glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f})}
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
+  //construct the the scene graph with its geometry
   initializeSceneGraph();
   initializeGeometry();
   initializeShaderPrograms();
@@ -41,66 +42,66 @@ void ApplicationSolar::render() const {
   // bind shader to upload uniforms
   glUseProgram(m_shaders.at("planet").handle);
   
+  // iterate through all nodes that are children in the root list 
   for (auto const& child : scene_graph.getRoot() -> getChildrenList()) {
-    
-      float speed = child -> getSpeed();
-      float distance = child -> getDistance();
-      float scale_size = child -> getSize();
-      glm::fmat4 model_matrix = glm::fmat4{1.0f};
-      model_matrix = child -> getLocalTransform();
-      model_matrix = glm::scale(glm::fmat4{}, glm::fvec3{scale_size, scale_size, scale_size});
-      model_matrix = glm::rotate(model_matrix, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
-      model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
-      
-      child -> setLocalTransform(model_matrix);
+    // get attributes about the specific planet behaviour
+    float speed = child -> getSpeed();
+    float distance = child -> getDistance();
+    float scale_size = child -> getSize();
 
-      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
-                         1, GL_FALSE, glm::value_ptr(model_matrix));
+    // cumulate transformation matrix
+    //get local matrix of each planet to set the new values
+    glm::fmat4 model_matrix = glm::fmat4{1.0f};
+    model_matrix = child -> getLocalTransform();
+    model_matrix = glm::scale(glm::fmat4{}, glm::fvec3{scale_size, scale_size, scale_size}); //scale size
+    model_matrix = glm::rotate(model_matrix, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
+    model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
+    //set the new transformation matrix for the current planet
+    child -> setLocalTransform(model_matrix);
 
-      // extra matrix for normal transformation to keep them orthogonal to surface
-      glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
-      glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
+
+    // extra matrix for normal transformation to keep them orthogonal to surface
+    glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
+    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
                          1, GL_FALSE, glm::value_ptr(normal_matrix)); 
 
-      // bind the VAO to draw
-      glBindVertexArray(planet_object.vertex_AO);
+    glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
+                         1, GL_FALSE, glm::value_ptr(model_matrix));
 
-      // draw bound vertex array using bound shader
-      glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
+    // bind the VAO to draw
+    glBindVertexArray(planet_object.vertex_AO);
+
+    // draw bound vertex array using bound shader
+    glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
     
+    //the earth has a child called "moon" which surrounds the earth
     if(child -> getName() == "earth"){
-      
+      //cumulate the child transform matrix as a parent of moon to get its own origin for childs 
       glm::fmat4 model_matrix = child -> getLocalTransform();
       float speed = child -> getSpeed();
       float distance = child -> getDistance();
       float scale_size = child -> getSize();
-      model_matrix = glm::scale(glm::fmat4{}, glm::fvec3{scale_size, scale_size, scale_size});
+      //calculate tranformation matrix of the earth (parent) to get the curent position
+      model_matrix = glm::scale(glm::fmat4{}, glm::fvec3{scale_size, scale_size, scale_size}); //scale size
       model_matrix = glm::rotate(model_matrix, float(glfwGetTime()) * speed, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
       model_matrix = glm::translate(model_matrix, glm::fvec3{0.0f, 0.0f, - distance}); //distance
 
-      //child -> setLocalTransform(model_matrix);
-      
+      // iterate through the children nodes of earth
       for (auto const& earth_children : child -> getChildrenList()){
 
-        //glm::fmat4 model_matrix_earth_child = child -> getLocalTransform();
-  
         float speed_child = earth_children -> getSpeed();
         float distance_child = earth_children -> getDistance();
         float scale_size = child -> getSize();
-        //std::cout << earth_children -> getDistance();
-        model_matrix = glm::scale(model_matrix * earth_children -> getLocalTransform(), glm::fvec3{scale_size, scale_size, scale_size});
+        //cumulate transformation values of the current child with tranformed origin (earth)
+        model_matrix = glm::scale(model_matrix * earth_children -> getLocalTransform(), glm::fvec3{scale_size, scale_size, scale_size}); //scale size
         model_matrix = glm::rotate(model_matrix * earth_children -> getLocalTransform(), 
                                   float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
-
-        model_matrix = glm::translate(model_matrix , glm::fvec3{0.0f, 0.0f, -  earth_children -> getDistance()}); //distance
+        model_matrix = glm::translate(model_matrix , glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
          
-
-
-        //earth_children -> setLocalTransform(model_matrix);
-
 
         // extra matrix for normal transformation to keep them orthogonal to surface
         glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
+
         glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
                           1, GL_FALSE, glm::value_ptr(normal_matrix)); 
 
@@ -113,7 +114,7 @@ void ApplicationSolar::render() const {
         // draw bound vertex array using bound shader
         glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);
 
-      }
+      }// end inner loop
     } //end if
 
 
@@ -157,20 +158,21 @@ void ApplicationSolar::initializeShaderPrograms() {
 }
 
 void ApplicationSolar::initializeSceneGraph() {
-
+  //load model information for planets of the solar system
   model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
 
+  //initialize the root for the scene graph
   auto root = std::make_shared<Node>();
 
 
-  
+  //construct each planet in each holder and add planets to the scene graph 
   GeometryNode mercury (planet_model);
   auto mercury_holder = std::make_shared<Node>(mercury);
   mercury_holder -> setName("mercury");
-  mercury_holder -> setParent(root);
+  mercury_holder -> setParent(root);  
   mercury_holder -> setDistance(10.0f); //distance to origin
   mercury_holder -> setSpeed(0.6f); //rotation speed
-  mercury_holder -> setSize(0.3f);
+  mercury_holder -> setSize(0.3f);  //scale size
   root -> addChildren(mercury_holder);
 
   GeometryNode venus (planet_model);
@@ -179,7 +181,7 @@ void ApplicationSolar::initializeSceneGraph() {
   venus_holder -> setParent(root);
   venus_holder -> setDistance(10.0f); //distance to origin
   venus_holder -> setSpeed(0.5f); //rotation speed
-  venus_holder -> setSize(0.5f);
+  venus_holder -> setSize(0.5f);  //scale size
   root -> addChildren(venus_holder);
 
   GeometryNode mars (planet_model);
@@ -188,7 +190,7 @@ void ApplicationSolar::initializeSceneGraph() {
   mars_holder -> setParent(root);
   mars_holder -> setDistance(30.0f); //distance to origin
   mars_holder -> setSpeed(0.4f); //rotation speed
-  mars_holder -> setSize(0.3f);
+  mars_holder -> setSize(0.3f); //scale size
   root -> addChildren(mars_holder);
 
   GeometryNode jupiter (planet_model);
@@ -197,7 +199,7 @@ void ApplicationSolar::initializeSceneGraph() {
   jupiter_holder -> setParent(root);
   jupiter_holder -> setDistance(8.0f); //distance to origin
   jupiter_holder -> setSpeed(0.25f); //rotation speed
-  jupiter_holder -> setSize(1.8f);
+  jupiter_holder -> setSize(1.8f);  //scale size
   root -> addChildren(jupiter_holder);
 
   GeometryNode saturn (planet_model);
@@ -206,7 +208,7 @@ void ApplicationSolar::initializeSceneGraph() {
   saturn_holder -> setParent(root);
   saturn_holder -> setDistance(10.0f); //distance to origin
   saturn_holder -> setSpeed(0.2f); //rotation speed
-  saturn_holder -> setSize(1.5f);
+  saturn_holder -> setSize(1.5f); //scale size
   root -> addChildren(saturn_holder);
 
   GeometryNode uranus (planet_model);
@@ -215,7 +217,7 @@ void ApplicationSolar::initializeSceneGraph() {
   uranus_holder -> setParent(root);
   uranus_holder -> setDistance(33.0f); //distance to origin
   uranus_holder -> setSpeed(0.15f); //rotation speed
-  uranus_holder -> setSize(0.75f);
+  uranus_holder -> setSize(0.75f);  //scale size
   root -> addChildren(uranus_holder);
 
   GeometryNode neptun (planet_model);
@@ -224,7 +226,7 @@ void ApplicationSolar::initializeSceneGraph() {
   neptun_holder -> setParent(root);
   neptun_holder -> setDistance(40.0f); //distance to origin
   neptun_holder -> setSpeed(0.1f); //rotation speed
-  neptun_holder -> setSize(0.75f);
+  neptun_holder -> setSize(0.75f);  //scale size
   root -> addChildren(neptun_holder);
 
   GeometryNode sun (planet_model);
@@ -233,7 +235,7 @@ void ApplicationSolar::initializeSceneGraph() {
   sun_holder -> setParent(root);
   sun_holder -> setDistance(0.0f); //distance to origin
   sun_holder -> setSpeed(0.1f); //rotation speed
-  sun_holder -> setSize(2.5f);
+  sun_holder -> setSize(2.5f);  //scale size
   root -> addChildren(sun_holder);
 
    GeometryNode earth (planet_model);
@@ -241,8 +243,8 @@ void ApplicationSolar::initializeSceneGraph() {
   earth_holder -> setName("earth");
   earth_holder -> setParent(root);
   earth_holder -> setDistance(12.0f); //distance to origin
-  earth_holder -> setSpeed(0.45f); //r0fotation speed
-  earth_holder -> setSize(0.5f);
+  earth_holder -> setSpeed(0.45f); //rotation speed
+  earth_holder -> setSize(0.5f);  //scale size
   root -> addChildren(earth_holder); 
   
   GeometryNode moon (planet_model);
@@ -251,18 +253,17 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setParent(earth_holder);
   moon_holder -> setDistance(5.0f); //distance to origin
   moon_holder -> setSpeed(0.9f); //rotation speed
-  moon_holder -> setSize(1.5f); //rotation speed
+  moon_holder -> setSize(1.5f); //scale size 
   earth_holder -> addChildren(moon_holder);
 
 
-
-
-  //CameraNode camera ();
+  // camera information in scene graph
   auto camera = std::make_shared<CameraNode>();
   camera -> setParent(root);
   camera -> setName("camera");
   root -> addChildren(camera);
 
+  // initialize the new scene graph
   SceneGraph sceneGraph_tmp{"SolarSystem", root};
   scene_graph = sceneGraph_tmp;
 }
