@@ -32,6 +32,7 @@ class ApplicationSolar : public Application {
   void initializeShaderPrograms();
   void initializeGeometry();
   void initializeSceneGraph();
+  void renderPlanets(glm::fmat4 model_matrix) const;
   // update uniform values
   void uploadUniforms();
   // upload projection matrix
