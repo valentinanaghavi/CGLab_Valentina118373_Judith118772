@@ -57,28 +57,6 @@ int Node::getDepth(){
     return depth_;
 }
 
-void Node::setSpeed(float speed){
-    speed_ = speed;
-}
-float Node::getSpeed(){
-    return speed_;
-}
-
-void Node::setDistance(float distance){
-    distance_ = distance;
-}
-float Node::getDistance(){
-    return distance_;
-}
-
-void Node::setSize(float size){
-    size_ = size;
-}
-float Node::getSize(){
-    return size_;
-}
-
-
 glm::mat4 Node::getLocalTransform(){
     return localTransform_;
 }
@@ -103,4 +81,27 @@ std::shared_ptr<Node> Node::removeChildren(std::string name){
     std::shared_ptr<Node> child = getChildren(name);
     children_.remove(child);
     return child;
+}
+
+
+
+void Node::setSpeed(float speed){
+    speed_ = speed;
+}
+float Node::getSpeed(){
+    return speed_;
+}
+
+void Node::setDistance(float distance){
+    distance_ = distance;
+}
+float Node::getDistance(){
+    return distance_;
+}
+
+void Node::setSize(float size){
+    size_ = size;
+}
+float Node::getSize(){
+    return size_;
 }

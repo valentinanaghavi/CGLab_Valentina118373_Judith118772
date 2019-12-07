@@ -20,9 +20,23 @@ class GeometryNode: public Node
         model getGeometry();
         void setGeometry(model geometry);
 
+        void setSpeed(float speed);
+        float getSpeed();
+
+        void setDistance(float distance);
+        float getDistance();
+
+        void setSize(float size);
+        float getSize();
+
     private:
 
     model geometry_;
+
+    float speed_;
+    float distance_;
+    float size_;
+
 
 };
 

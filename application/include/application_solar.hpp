@@ -27,12 +27,18 @@ class ApplicationSolar : public Application {
 
   // draw all objects
   void render() const;
+  void renderPlanets(glm::fmat4 model_matrix) const;
+  void renderStars() const;
+
+  void initializeSceneGraph();
+  void initializeStars();
 
  protected:
   void initializeShaderPrograms();
   void initializeGeometry();
-  void initializeSceneGraph();
-  void renderPlanets(glm::fmat4 model_matrix) const;
+  
+
+  
   // update uniform values
   void uploadUniforms();
   // upload projection matrix
@@ -42,6 +48,9 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object planet_object;
+
+  // cpu representation of model
+  model_object star_object;
 
   SceneGraph scene_graph;
   

@@ -25,15 +25,6 @@ class Node
         std::string getName();
         std::string getPath();
         int getDepth();
-
-        void setSpeed(float speed);
-        float getSpeed();
-
-        void setDistance(float distance);
-        float getDistance();
-
-        void setSize(float size);
-        float getSize();
         
         glm::mat4 getLocalTransform();
         void setLocalTransform(glm::mat4 matrix_in);
@@ -43,7 +34,16 @@ class Node
 
         void addChildren(std::shared_ptr<Node> child);
         std::shared_ptr<Node> removeChildren(std::string name);
-        
+
+        void setSpeed(float speed);
+        float getSpeed();
+
+        void setDistance(float distance);
+        float getDistance();
+
+        void setSize(float size);
+        float getSize();
+
 
     protected:
     
