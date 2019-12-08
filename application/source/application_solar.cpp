@@ -472,7 +472,7 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
 //handle delta mouse movement input
 void ApplicationSolar::mouseCallback(double pos_x, double pos_y) {
   // mouse handling
-  //left
+  /*/left
   if(pos_x > 0){
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{-0.1f, 0.0f, 0.0f});
     uploadView();
@@ -491,9 +491,13 @@ void ApplicationSolar::mouseCallback(double pos_x, double pos_y) {
   if(pos_y < 0){
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{0.0f, -0.1f, 0.0f});
     uploadView();
-  }
+  }*/
 
-  
+    float horizontal_rotate = float(pos_x/20); //divide to slow down
+    float vertical_rotate = float(pos_y/20);
+
+  m_view_transform = glm::rotate(m_view_transform, glm::radians(vertical_rotate), glm::fvec3{1.0f,0.0f,0.0f});
+  m_view_transform = glm::rotate(m_view_transform, glm::radians(horizontal_rotate), glm::fvec3{0.0f,1.0f,0.0f});
   
 }
 
