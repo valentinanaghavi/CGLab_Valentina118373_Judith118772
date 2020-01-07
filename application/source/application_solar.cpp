@@ -320,6 +320,11 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setPlanetColor(glm::vec3{0.7f, 0.8f, 0.7f});
   earth_holder -> addChildren(moon_holder); 
 
+  PointLightNode sun_light(1.0f, {1.0f, 1.0f, 1.0f});
+  auto sun_light_holder = std::make_shared<Node>(sun_light);
+  sun_light_holder -> setName("sun_light");
+  sun_light_holder -> setParent(root);
+  root -> addChildren(sun_light_holder);
 
   // camera information in scene graph
   auto camera = std::make_shared<CameraNode>();
@@ -370,9 +375,9 @@ void ApplicationSolar::initializeStars(){
   float r, g, b = 0;
   
   for(int i = 0; i < number_of_stars; i++){
-    x = (float)(random(0, 100)) - 100.0f; 
-    y = (float)(random(0, 100)) - 100.0f;
-    z = (float)(-(random(0, 100))) - 100.0f;
+    x = (float)(random(0, 200)) - 100.0f; 
+    y = (float)(random(0, 200)) - 100.0f;
+    z = (float)(random(0, 200)) - 100.0f;
 
     r = (float) random(0,255);
     g = (float) random(0,255);

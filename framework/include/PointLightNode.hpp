@@ -9,12 +9,15 @@ class PointLightNode: public Node
 {
     public:
     PointLightNode();
-    PointLightNode(float lightIntensity, glm::vec3  lightColor);
+    PointLightNode(float lightIntensity, glm::fvec3  lightColor);
      ~PointLightNode();
+
+    float getLightIntensity();
+    glm::fvec3 getLightColor();
 
     private:
     float lightIntensity_;
-    glm::vec3 lightColor_;
+    glm::fvec3 lightColor_;
 
 };
 

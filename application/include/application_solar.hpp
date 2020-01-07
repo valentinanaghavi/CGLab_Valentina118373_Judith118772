@@ -9,6 +9,7 @@
 #include "Node.hpp"
 #include "GeometryNode.hpp"
 #include "CameraNode.hpp"
+#include "PointLightNode.hpp"
 
 // gpu representation of model
 class ApplicationSolar : public Application {
