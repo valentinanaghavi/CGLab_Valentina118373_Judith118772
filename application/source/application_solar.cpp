@@ -56,9 +56,7 @@ void ApplicationSolar::render() const {
     float distance = child -> getDistance();
     float scale_size = child -> getSize();
     glm::fvec3 planetcolor = child -> getPlanetColor();
-    glUseProgram(m_shaders.at("planet").handle);
-    int location = glGetUniformLocation(m_shaders.at("planet").handle, "planetcolor");
-    glUniform3f(location, planetcolor[0], planetcolor[1], planetcolor[2]);
+
 
     // cumulate transformation matrix
     //get local matrix of each planet to set the new values
@@ -70,7 +68,7 @@ void ApplicationSolar::render() const {
     //set the new transformation matrix for the current planet
     child -> setLocalTransform(model_matrix);
 
-    renderPlanets(model_matrix);
+    renderPlanets(model_matrix, planetcolor);
 
     //the earth has a child called "moon" which surrounds the earth
     if(child -> getName() == "earth"){
@@ -90,13 +88,14 @@ void ApplicationSolar::render() const {
         float speed_child = earth_children -> getSpeed();
         float distance_child = earth_children -> getDistance();
         float scale_size = child -> getSize();
+        glm::fvec3 earth_planetcolor = earth_children -> getPlanetColor();
         //cumulate transformation values of the current child with tranformed origin (earth)
         model_matrix = glm::scale(model_matrix * earth_children -> getLocalTransform(), glm::fvec3{scale_size, scale_size, scale_size}); //scale size
         model_matrix = glm::rotate(model_matrix * earth_children -> getLocalTransform(), 
                                   float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
         model_matrix = glm::translate(model_matrix , glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
          
-        renderPlanets(model_matrix);
+        renderPlanets(model_matrix, earth_planetcolor);
         
       }// end inner loop
     } //end if
@@ -108,8 +107,12 @@ void ApplicationSolar::render() const {
 
 } //end function
 
-void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix) const{
+void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color) const{
      glUseProgram(m_shaders.at("planet").handle);
+
+    int location = glGetUniformLocation(m_shaders.at("planet").handle, "planetcolor");
+    glUniform3f(location, planet_color[0], planet_color[1], planet_color[2]);
+
     // extra matrix for normal transformation to keep them orthogonal to surface
     glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("NormalMatrix"), 
@@ -215,6 +218,7 @@ void ApplicationSolar::initializeSceneGraph() {
   mercury_holder -> setSpeed(0.6f); //rotation speed
   mercury_holder -> setSize(0.3f);  //scale size
   mercury_holder -> setParent(mercury_holder);
+  mercury_holder -> setPlanetColor(glm::vec3{1.0f, 1.0f, 0.8f});
   root -> addChildren(mercury_holder);
 
   GeometryNode venus (planet_model);
@@ -225,6 +229,7 @@ void ApplicationSolar::initializeSceneGraph() {
   venus_holder -> setSpeed(0.5f); //rotation speed
   venus_holder -> setSize(0.5f);  //scale size
   venus_holder -> setParent(venus_holder);
+  venus_holder -> setPlanetColor(glm::vec3{1.0f, 0.7f, 0.2f});
   root -> addChildren(venus_holder);
 
   GeometryNode mars (planet_model);
@@ -235,6 +240,7 @@ void ApplicationSolar::initializeSceneGraph() {
   mars_holder -> setSpeed(0.4f); //rotation speed
   mars_holder -> setSize(0.3f); //scale size
   mars_holder -> setParent(mars_holder);
+  mars_holder -> setPlanetColor(glm::vec3{1.0f, 0.5f, 0.4f});
   root -> addChildren(mars_holder);
 
   GeometryNode jupiter (planet_model);
@@ -245,6 +251,7 @@ void ApplicationSolar::initializeSceneGraph() {
   jupiter_holder -> setSpeed(0.25f); //rotation speed
   jupiter_holder -> setSize(1.8f);  //scale size
   jupiter_holder -> setParent(jupiter_holder);
+  jupiter_holder -> setPlanetColor(glm::vec3{0.9f, 0.7f, 0.5f});
   root -> addChildren(jupiter_holder);
 
   GeometryNode saturn (planet_model);
@@ -255,6 +262,7 @@ void ApplicationSolar::initializeSceneGraph() {
   saturn_holder -> setSpeed(0.2f); //rotation speed
   saturn_holder -> setSize(1.5f); //scale size
   saturn_holder -> setParent(saturn_holder);
+  saturn_holder -> setPlanetColor(glm::vec3{0.9f, 1.0f, 1.0f});
   root -> addChildren(saturn_holder);
 
   GeometryNode uranus (planet_model);
@@ -265,6 +273,7 @@ void ApplicationSolar::initializeSceneGraph() {
   uranus_holder -> setSpeed(0.15f); //rotation speed
   uranus_holder -> setSize(0.75f);  //scale size
   uranus_holder -> setParent(uranus_holder);
+  uranus_holder -> setPlanetColor(glm::vec3{0.7f, 0.7f, 0.6f});
   root -> addChildren(uranus_holder);
 
   GeometryNode neptun (planet_model);
@@ -275,6 +284,7 @@ void ApplicationSolar::initializeSceneGraph() {
   neptun_holder -> setSpeed(0.1f); //rotation speed
   neptun_holder -> setSize(0.75f);  //scale size
   neptun_holder -> setParent(neptun_holder);
+  neptun_holder -> setPlanetColor(glm::vec3{0.5f, 0.6f, 1.0f});
   root -> addChildren(neptun_holder);
 
   GeometryNode sun (planet_model);
@@ -285,7 +295,7 @@ void ApplicationSolar::initializeSceneGraph() {
   sun_holder -> setSpeed(0.1f); //rotation speed
   sun_holder -> setSize(2.5f);  //scale size
   sun_holder -> setParent(sun_holder);
-  sun_holder -> setPlanetColor(glm::vec3{1.0, 5.0, 1.0});
+  sun_holder -> setPlanetColor(glm::vec3{0.9f, 1.0f, 0.1f});
   root -> addChildren(sun_holder);
 
    GeometryNode earth (planet_model);
@@ -296,6 +306,7 @@ void ApplicationSolar::initializeSceneGraph() {
   earth_holder -> setSpeed(0.45f); //rotation speed
   earth_holder -> setSize(0.5f);  //scale size
   earth_holder -> setParent(earth_holder);
+  earth_holder -> setPlanetColor(glm::vec3{0.4f, 0.9f, 0.3f});
   root -> addChildren(earth_holder); 
   
   GeometryNode moon (planet_model);
@@ -306,6 +317,7 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setSpeed(0.9f); //rotation speed
   moon_holder -> setSize(1.5f); //scale size 
   moon_holder -> setParent(earth_holder);
+  moon_holder -> setPlanetColor(glm::vec3{0.7f, 0.8f, 0.7f});
   earth_holder -> addChildren(moon_holder); 
 
 
@@ -358,9 +370,9 @@ void ApplicationSolar::initializeStars(){
   float r, g, b = 0;
   
   for(int i = 0; i < number_of_stars; i++){
-    x = (float)(random(0, 100)) - 50.0f; 
-    y = (float)(random(0, 100)) - 50.0f;
-    z = (float)(-(random(0, 100))) - 50.0f;
+    x = (float)(random(0, 100)) - 100.0f; 
+    y = (float)(random(0, 100)) - 100.0f;
+    z = (float)(-(random(0, 100))) - 100.0f;
 
     r = (float) random(0,255);
     g = (float) random(0,255);

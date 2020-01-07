@@ -27,7 +27,7 @@ class ApplicationSolar : public Application {
 
   // draw all objects
   void render() const;
-  void renderPlanets(glm::fmat4 model_matrix) const;
+  void renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color) const;
   void renderStars() const;
 
   void initializeSceneGraph();
