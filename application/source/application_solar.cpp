@@ -55,6 +55,10 @@ void ApplicationSolar::render() const {
     float speed = child -> getSpeed();
     float distance = child -> getDistance();
     float scale_size = child -> getSize();
+    glm::fvec3 planetcolor = child -> getPlanetColor();
+    glUseProgram(m_shaders.at("planet").handle);
+    int location = glGetUniformLocation(m_shaders.at("planet").handle, "planetcolor");
+    glUniform3f(location, planetcolor[0], planetcolor[1], planetcolor[2]);
 
     // cumulate transformation matrix
     //get local matrix of each planet to set the new values
@@ -281,6 +285,7 @@ void ApplicationSolar::initializeSceneGraph() {
   sun_holder -> setSpeed(0.1f); //rotation speed
   sun_holder -> setSize(2.5f);  //scale size
   sun_holder -> setParent(sun_holder);
+  sun_holder -> setPlanetColor(glm::vec3{1.0, 5.0, 1.0});
   root -> addChildren(sun_holder);
 
    GeometryNode earth (planet_model);
@@ -301,7 +306,7 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setSpeed(0.9f); //rotation speed
   moon_holder -> setSize(1.5f); //scale size 
   moon_holder -> setParent(earth_holder);
-  earth_holder -> addChildren(moon_holder); //????????????????????????????
+  earth_holder -> addChildren(moon_holder); 
 
 
   // camera information in scene graph
@@ -490,7 +495,7 @@ void ApplicationSolar::mouseCallback(double pos_x, double pos_y) {
   //up
   if(pos_y < 0){
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{0.0f, -0.1f, 0.0f});
-    uploadView();
+    uploadView();Assignment3ShadersFrancesco Andreussifrancesco.andreussi@uni–weimar.de12 December 2019DeadlineWednesday, 9 January 2020 at 23:55.Task•Extend theNodeclass with aPointLightNodeclass, which has as additional at-tributeslightIntensityandlightColor.  (10%)•Assign a different color for each planet usingglUniform3f
   }*/
 
     float horizontal_rotate = float(pos_x/20); //divide to slow down

@@ -44,6 +44,9 @@ class Node
         void setSize(float size);
         float getSize();
 
+        void setPlanetColor(glm::vec3 const& color);
+        glm::vec3 getPlanetColor() const; 
+
 
     protected:
     
@@ -58,6 +61,7 @@ class Node
         float speed_;
         float distance_;
         float size_;
+        glm::fvec3 planetColor_;
 
 };
 

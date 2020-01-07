@@ -105,3 +105,11 @@ void Node::setSize(float size){
 float Node::getSize(){
     return size_;
 }
+
+void Node::setPlanetColor(glm::fvec3 const& color){
+    planetColor_ = color;
+}
+glm::fvec3 Node::getPlanetColor() const {
+    return planetColor_;
+}
+
