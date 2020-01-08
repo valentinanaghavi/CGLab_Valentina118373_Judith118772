@@ -32,10 +32,11 @@ void main() {
   float shininess = 16.0; 
 
   vec3 ambient =  k_a * lightintensity * lightcolor;
-  vec3 diffuse =  k_d * lightintensity * (max(dot(N,L),0.0)) * lightcolor;
+  vec3 diffuse =  k_d * lightintensity * (max(dot(L,N),0.0)) * lightcolor;
   vec3 specular = k_s * pow(max(dot(halfway_direction, N), 0.0), shininess) * specularcolor ;
 
-  vec3 blinn_phong_color =  planetcolor + diffuse * planetcolor + specular;//planetcolor * normalize(lightintensity) + diffuse * planetcolor + specular;
+  vec3 blinn_phong_color = planetcolor + diffuse * planetcolor + specular;
   out_Color = vec4(blinn_phong_color, 1.0);
+
   //out_Color = vec4(planetcolor, 1.0);
 }
