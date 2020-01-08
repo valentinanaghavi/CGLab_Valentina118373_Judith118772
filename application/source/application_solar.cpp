@@ -51,12 +51,15 @@ void ApplicationSolar::render() const {
   
   // iterate through all nodes that are children in the root list 
   for (auto const& child : scene_graph.getRoot() -> getChildrenList()) {
-    float light_intensity = 0.4;
-    glm::vec3 light_color = {1.0, 1.0, 1.0};
+
+    float light_intensity = 1.0;
+    glm::vec3 light_color = {0.7, 0.7, 0.7};
+
     for(auto const& light : scene_light.getRoot() -> getChildrenList()){
       light_intensity = light -> getLightIntensity();
       light_color = light -> getLightColor();
     }
+
     // get attributes about the specific planet behaviour
     float speed = child -> getSpeed();
     float distance = child -> getDistance();
@@ -332,7 +335,7 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setPlanetColor(glm::vec3{0.7f, 0.8f, 0.7f});
   earth_holder -> addChildren(moon_holder); 
 
-  PointLightNode sun_light(1.0f, {1.0f, 1.0f, 1.0f});
+  PointLightNode sun_light(10.0f, {1.0f, 1.0f, 1.0f});
   auto sun_light_holder = std::make_shared<Node>(sun_light);
   sun_light_holder -> setName("sun_light");
   sun_light_holder -> setParent(root);
