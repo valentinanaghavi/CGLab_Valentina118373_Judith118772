@@ -17,7 +17,7 @@ out vec3 pass_Camera_Position;
 void main(void)
 {
 	gl_Position = (ProjectionMatrix  * ViewMatrix * ModelMatrix) * vec4(in_Position, 1.0);
-	pass_Normal = (NormalMatrix * vec4(in_Normal, 0.0)).xyz;
+	pass_Normal = (ViewMatrix * vec4(in_Normal, 0.0)).xyz;
 
 	pass_Vertex_Position = ((ViewMatrix * ModelMatrix) * vec4(in_Position, 1.0)).xyz; 
 	pass_Camera_Position = (inverse(transpose(ViewMatrix)) * vec4(0.0, 0.0, 0.0, 1.0)).xyz;

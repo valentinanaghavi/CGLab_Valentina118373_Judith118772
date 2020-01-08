@@ -307,7 +307,7 @@ void ApplicationSolar::initializeSceneGraph() {
   sun_holder -> setName("sun");
   sun_holder -> setParent(root);
   sun_holder -> setDistance(0.0f); //distance to origin
-  sun_holder -> setSpeed(0.1f); //rotation speed
+  sun_holder -> setSpeed(0.0f); //rotation speed
   sun_holder -> setSize(2.5f);  //scale size
   sun_holder -> setParent(sun_holder);
   sun_holder -> setPlanetColor(glm::vec3{0.9f, 1.0f, 0.1f});
