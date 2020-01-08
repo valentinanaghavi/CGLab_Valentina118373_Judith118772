@@ -113,3 +113,17 @@ glm::fvec3 Node::getPlanetColor() const {
     return planetColor_;
 }
 
+float Node::getLightIntensity() const{
+    return light_intensity_;
+}
+void Node::setLightIntensity(float const& light_intensity){
+    light_intensity_ = light_intensity;
+}
+
+glm::fvec3 Node::getLightColor() const{
+    return light_color_;
+}
+void Node::setLightColor(glm::fvec3 const& light_color){
+    light_color_ = light_color;
+}
+

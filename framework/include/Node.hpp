@@ -47,6 +47,11 @@ class Node
         void setPlanetColor(glm::vec3 const& color);
         glm::vec3 getPlanetColor() const; 
 
+        float getLightIntensity() const;
+        void setLightIntensity(float const& light_intensity);
+
+        glm::fvec3 getLightColor() const;
+        void setLightColor(glm::fvec3 const& light_color);
 
     protected:
     
@@ -62,7 +67,8 @@ class Node
         float distance_;
         float size_;
         glm::fvec3 planetColor_;
-
+        float light_intensity_;
+        glm::fvec3 light_color_;
 };
 
 

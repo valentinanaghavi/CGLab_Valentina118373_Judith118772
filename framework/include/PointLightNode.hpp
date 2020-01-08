@@ -15,7 +15,7 @@ class PointLightNode: public Node
     float getLightIntensity();
     glm::fvec3 getLightColor();
 
-    private:
+    protected:
     float lightIntensity_;
     glm::fvec3 lightColor_;
 

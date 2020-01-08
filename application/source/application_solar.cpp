@@ -51,6 +51,12 @@ void ApplicationSolar::render() const {
   
   // iterate through all nodes that are children in the root list 
   for (auto const& child : scene_graph.getRoot() -> getChildrenList()) {
+    float light_intensity = 0.4;
+    glm::vec3 light_color = {1.0, 1.0, 1.0};
+    for(auto const& light : scene_light.getRoot() -> getChildrenList()){
+      light_intensity = light -> getLightIntensity();
+      light_color = light -> getLightColor();
+    }
     // get attributes about the specific planet behaviour
     float speed = child -> getSpeed();
     float distance = child -> getDistance();
@@ -68,7 +74,7 @@ void ApplicationSolar::render() const {
     //set the new transformation matrix for the current planet
     child -> setLocalTransform(model_matrix);
 
-    renderPlanets(model_matrix, planetcolor);
+    renderPlanets(model_matrix, planetcolor, light_intensity, light_color);
 
     //the earth has a child called "moon" which surrounds the earth
     if(child -> getName() == "earth"){
@@ -95,8 +101,8 @@ void ApplicationSolar::render() const {
                                   float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
         model_matrix = glm::translate(model_matrix , glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
          
-        renderPlanets(model_matrix, earth_planetcolor);
-        
+        renderPlanets(model_matrix, earth_planetcolor, light_intensity, light_color);
+
       }// end inner loop
     } //end if
 
@@ -107,11 +113,17 @@ void ApplicationSolar::render() const {
 
 } //end function
 
-void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color) const{
+void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color) const{
      glUseProgram(m_shaders.at("planet").handle);
 
     int location = glGetUniformLocation(m_shaders.at("planet").handle, "planetcolor");
     glUniform3f(location, planet_color[0], planet_color[1], planet_color[2]);
+
+    location = glGetUniformLocation(m_shaders.at("planet").handle, "lightintensity");
+    glUniform1f(location, light_intensity);
+
+    location = glGetUniformLocation(m_shaders.at("planet").handle, "lightcolor");
+    glUniform3f(location, light_color[0], light_color[1], light_color[2]);
 
     // extra matrix for normal transformation to keep them orthogonal to surface
     glm::fmat4 normal_matrix = glm::inverseTranspose(glm::inverse(m_view_transform) * model_matrix); 
@@ -207,7 +219,7 @@ void ApplicationSolar::initializeSceneGraph() {
 
   //initialize the root for the scene graph
   auto root = std::make_shared<Node>();
-
+  auto light = std::make_shared<Node>();
 
   //construct each planet in each holder and add planets to the scene graph 
   GeometryNode mercury (planet_model);
@@ -324,7 +336,7 @@ void ApplicationSolar::initializeSceneGraph() {
   auto sun_light_holder = std::make_shared<Node>(sun_light);
   sun_light_holder -> setName("sun_light");
   sun_light_holder -> setParent(root);
-  root -> addChildren(sun_light_holder);
+  light -> addChildren(sun_light_holder);
 
   // camera information in scene graph
   auto camera = std::make_shared<CameraNode>();
@@ -333,8 +345,11 @@ void ApplicationSolar::initializeSceneGraph() {
   root -> addChildren(camera);
 
   // initialize the new scene graph
-  SceneGraph sceneGraph_tmp{"SolarSystem", root};
-  scene_graph = sceneGraph_tmp;
+  SceneGraph sceneGraph_tmp_1{"SolarSystem", root};
+  scene_graph = sceneGraph_tmp_1;
+
+  SceneGraph sceneGraph_tmp_2{"lights", light};
+  scene_light = sceneGraph_tmp_2;
 }
 
 // 3-component floating-point value.

@@ -10,6 +10,16 @@ SceneGraph::SceneGraph(std::string name, std::shared_ptr<Node> root):
     root_{root}
 {}
 
+SceneGraph::SceneGraph(std::string name, std::shared_ptr<GeometryNode> g_root):
+    name_{name},
+    g_root_{g_root}
+{}
+
+SceneGraph::SceneGraph(std::string name, std::shared_ptr<PointLightNode> l_root):
+    name_{name},
+    l_root_{l_root}
+{}
+
 SceneGraph::~SceneGraph() {
  
 }
