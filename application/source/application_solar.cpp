@@ -53,7 +53,7 @@ void ApplicationSolar::render() const {
   for (auto const& child : scene_graph.getRoot() -> getChildrenList()) {
 
     float light_intensity = 1.0;
-    glm::vec3 light_color = {0.7, 0.7, 0.7};
+    glm::vec3 light_color = {1.0, 1.0, 1.0};
 
     for(auto const& light : scene_light.getRoot() -> getChildrenList()){
       light_intensity = light -> getLightIntensity();
