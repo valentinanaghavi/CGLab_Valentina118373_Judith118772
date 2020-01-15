@@ -10,6 +10,7 @@
 #include "GeometryNode.hpp"
 #include "CameraNode.hpp"
 #include "PointLightNode.hpp"
+#include "texture_loader.hpp"
 
 // gpu representation of model
 class ApplicationSolar : public Application {
@@ -31,6 +32,7 @@ class ApplicationSolar : public Application {
   void renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color) const;
   void renderStars() const;
 
+  void loadTextures();
   void initializeSceneGraph();
   void initializeStars();
 

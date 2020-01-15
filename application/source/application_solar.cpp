@@ -29,6 +29,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
   //construct the the scene graph with its geometry
+  loadTextures();
   initializeStars();
   initializeSceneGraph();
   initializeGeometry();
@@ -43,6 +44,21 @@ ApplicationSolar::~ApplicationSolar() {
   glDeleteBuffers(1, &star_object.vertex_BO);
   glDeleteBuffers(1, &star_object.element_BO);
   glDeleteVertexArrays(1, &star_object.vertex_AO);
+}
+
+
+void ApplicationSolar::loadTextures(){
+
+  pixel_data sun_texture = texture_loader::file(m_resource_path + "textures/sunmap.jpg");
+  pixel_data earth_texture = texture_loader::file(m_resource_path + "textures/earthmap.jpg");
+  pixel_data jupiter_texture = texture_loader::file(m_resource_path + "textures/jupitermap.jpg");
+  pixel_data mars_texture = texture_loader::file(m_resource_path + "textures/marsmap.jpg");
+  pixel_data mercury_texture = texture_loader::file(m_resource_path + "textures/mercurymap.jpg");
+  pixel_data neptune_texture = texture_loader::file(m_resource_path + "textures/neptunemap.jpg");
+  pixel_data pluto_texture = texture_loader::file(m_resource_path + "textures/plutomap.jpg");
+  pixel_data saturn_texture = texture_loader::file(m_resource_path + "textures/saturnmap.jpg");
+  pixel_data uranus_texture = texture_loader::file(m_resource_path + "textures/uranusmap.jpg");
+  pixel_data venus_texture = texture_loader::file(m_resource_path + "textures/venusmap.jpg");
 }
 
 void ApplicationSolar::render() const {
