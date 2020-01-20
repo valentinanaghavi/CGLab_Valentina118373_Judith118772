@@ -25,11 +25,13 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  :Application{resource_path}
  ,planet_object{}
  ,star_object{}
+ ,texture_object{}
  ,m_view_transform{glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f})}
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
   //construct the the scene graph with its geometry
   loadTextures();
+
   initializeStars();
   initializeSceneGraph();
   initializeGeometry();
@@ -49,6 +51,7 @@ ApplicationSolar::~ApplicationSolar() {
 
 void ApplicationSolar::loadTextures(){
 
+  //load texture images of planets 
   pixel_data sun_texture = texture_loader::file(m_resource_path + "textures/sunmap.jpg");
   pixel_data earth_texture = texture_loader::file(m_resource_path + "textures/earthmap.jpg");
   pixel_data jupiter_texture = texture_loader::file(m_resource_path + "textures/jupitermap.jpg");
@@ -59,6 +62,25 @@ void ApplicationSolar::loadTextures(){
   pixel_data saturn_texture = texture_loader::file(m_resource_path + "textures/saturnmap.jpg");
   pixel_data uranus_texture = texture_loader::file(m_resource_path + "textures/uranusmap.jpg");
   pixel_data venus_texture = texture_loader::file(m_resource_path + "textures/venusmap.jpg");
+  //save them in a vector container of type pixel data
+  texture_pixel_data_container.push_back(sun_texture);
+  texture_pixel_data_container.push_back(earth_texture);
+  texture_pixel_data_container.push_back(jupiter_texture);
+  texture_pixel_data_container.push_back(mars_texture);
+  texture_pixel_data_container.push_back(mercury_texture);
+  texture_pixel_data_container.push_back(neptune_texture);
+  texture_pixel_data_container.push_back(pluto_texture);
+  texture_pixel_data_container.push_back(saturn_texture);
+  texture_pixel_data_container.push_back(uranus_texture);
+  texture_pixel_data_container.push_back(venus_texture);
+
+
+  texture_object texture;
+  
+  glActiveTexture(GL_TEXTURE);
+  glGenTextures(1, &texture.handle);
+
+
 }
 
 void ApplicationSolar::render() const {

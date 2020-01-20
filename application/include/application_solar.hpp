@@ -1,6 +1,8 @@
 #ifndef APPLICATION_SOLAR_HPP
 #define APPLICATION_SOLAR_HPP
 
+#include <vector>
+
 #include "application.hpp"
 #include "model.hpp"
 #include "structs.hpp"
@@ -11,6 +13,7 @@
 #include "CameraNode.hpp"
 #include "PointLightNode.hpp"
 #include "texture_loader.hpp"
+#include "pixel_data.hpp"
 
 // gpu representation of model
 class ApplicationSolar : public Application {
@@ -54,9 +57,11 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object star_object;
-
+  model_object texture_object;
   SceneGraph scene_graph;
   SceneGraph scene_light;
+
+  std::vector<pixel_data> texture_pixel_data_container;
   // camera transform matrix
   glm::fmat4 m_view_transform;
   // camera projection matrix
