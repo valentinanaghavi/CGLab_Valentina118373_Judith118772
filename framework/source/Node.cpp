@@ -127,3 +127,11 @@ void Node::setLightColor(glm::fvec3 const& light_color){
     light_color_ = light_color;
 }
 
+
+pixel_data Node::getTexture() const{
+    return planet_texture_;
+}
+
+void Node::setTexture(pixel_data const& planet_texture){
+    planet_texture_ = planet_texture;
+}
