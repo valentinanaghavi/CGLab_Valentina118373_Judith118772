@@ -32,7 +32,7 @@ class ApplicationSolar : public Application {
 
   // draw all objects
   void render() const;
-  void renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color) const;
+  void renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color, texture_object texture) const;
   void renderStars() const;
 
   void loadTextures();
@@ -60,7 +60,7 @@ class ApplicationSolar : public Application {
   model_object star_object;
   
   texture_object texture_object_value;
-  
+
   SceneGraph scene_graph;
   SceneGraph scene_light;
   // load pixel data to model object (texture)

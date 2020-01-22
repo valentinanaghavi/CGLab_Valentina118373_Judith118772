@@ -3,12 +3,19 @@
 in vec3 pass_Normal;
 in vec3 pass_Vertex_Position;
 in vec3 pass_Camera_Position;
+in vec2 pass_Texture_Position;
 
 out vec4 out_Color;
 
 uniform vec3 planetcolor;
 uniform float lightintensity; //ambient
 uniform vec3 lightcolor; //for diffuse and ambient
+
+uniform sampler2D Texture;
+vec4 color_from_tex = texture(Texture, pass_Texture_Position);
+
+vec3 ambient =  color_from_tex.xyz;
+vec3 diffuse =  color_from_tex.xyz;
 
 const vec3 lightposition = vec3(0.0, 0.0, 0.0);
 const vec3 specularcolor = vec3(1.0, 1.0, 1.0);
@@ -19,6 +26,8 @@ void main() {
 
   //Blinn-Phong
   //https://de.wikipedia.org/wiki/Blinn-Beleuchtungsmodell
+
+ 
 
   vec3 L = normalize(lightposition - pass_Vertex_Position); // light direction
   vec3 V = normalize(pass_Camera_Position - pass_Vertex_Position); //view direction
@@ -32,6 +41,7 @@ void main() {
   float shininess = 16.0; 
 
   vec3 final_lightintensity = (lightcolor * (lightintensity *10000)) / (4*3.14 * length(lightposition - pass_Vertex_Position));
+  
 
   vec3 ambient =  k_a * planetcolor;
   vec3 diffuse =  k_d * planetcolor * (max(dot(L,N),0.0));

@@ -93,8 +93,9 @@ void ApplicationSolar::initializeTextures(){
 
     //Define Texture Sampling Parameters (mandatory)
     glTexParameteri(GL_TEXTURE_2D/*target*/, GL_TEXTURE_MIN_FILTER /*enum - uses mipmapping*/, GL_LINEAR/*GL_Nearest*/); // set texture parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
-
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  
     // Define Texture Data and Format
     glTexImage2D(GL_TEXTURE_2D, 0, current_texture_node.channels , (GLsizei)current_texture_node.width, (GLsizei)current_texture_node.height,
                 0/*border*/, current_texture_node.channels, current_texture_node.channel_type, current_texture_node.ptr());
@@ -123,6 +124,7 @@ void ApplicationSolar::render() const {
     float distance = child -> getDistance();
     float scale_size = child -> getSize();
     glm::fvec3 planetcolor = child -> getPlanetColor();
+    texture_object texture = child -> getTexture();
 
 
     // cumulate transformation matrix
@@ -135,7 +137,7 @@ void ApplicationSolar::render() const {
     //set the new transformation matrix for the current planet
     child -> setLocalTransform(model_matrix);
 
-    renderPlanets(model_matrix, planetcolor, light_intensity, light_color);
+    renderPlanets(model_matrix, planetcolor, light_intensity, light_color, texture);
 
     //the earth has a child called "moon" which surrounds the earth
     if(child -> getName() == "earth"){
@@ -156,13 +158,14 @@ void ApplicationSolar::render() const {
         float distance_child = earth_children -> getDistance();
         float scale_size = child -> getSize();
         glm::fvec3 earth_planetcolor = earth_children -> getPlanetColor();
+        texture_object earth_texture = earth_children -> getTexture();
         //cumulate transformation values of the current child with tranformed origin (earth)
         model_matrix = glm::scale(model_matrix * earth_children -> getLocalTransform(), glm::fvec3{scale_size, scale_size, scale_size}); //scale size
         model_matrix = glm::rotate(model_matrix * earth_children -> getLocalTransform(), 
                                   float(glfwGetTime()) * speed_child, glm::fvec3{0.0f, 1.0f, 0.0f});//speed
         model_matrix = glm::translate(model_matrix , glm::fvec3{0.0f, 0.0f, - distance_child}); //distance
          
-        renderPlanets(model_matrix, earth_planetcolor, light_intensity, light_color);
+        renderPlanets(model_matrix, earth_planetcolor, light_intensity, light_color, earth_texture);
 
       }// end inner loop
     } //end if
@@ -174,7 +177,7 @@ void ApplicationSolar::render() const {
 
 } //end function
 
-void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color) const{
+void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_color, float light_intensity, glm::fvec3 light_color, texture_object texture) const{
      glUseProgram(m_shaders.at("planet").handle);
 
     int location = glGetUniformLocation(m_shaders.at("planet").handle, "planetcolor");
@@ -193,6 +196,15 @@ void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_
 
     glUniformMatrix4fv(m_shaders.at("planet").u_locs.at("ModelMatrix"),
                          1, GL_FALSE, glm::value_ptr(model_matrix));
+
+
+
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.handle);
+    int sampler_location = glGetUniformLocation(m_shaders.at("planet").handle, "Texture");
+    glUseProgram(m_shaders.at("planet").handle);
+    glUniform1i(sampler_location, 0);
 
     // bind the VAO to draw
     glBindVertexArray(planet_object.vertex_AO);
@@ -266,6 +278,7 @@ void ApplicationSolar::initializeShaderPrograms() {
   m_shaders.at("planet").u_locs["ModelMatrix"] = -1;
   m_shaders.at("planet").u_locs["ViewMatrix"] = -1;
   m_shaders.at("planet").u_locs["ProjectionMatrix"] = -1;
+  m_shaders.at("planet").u_locs["Texture"] = -1;
 
   m_shaders.emplace("star", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/vao.vert"},
                                            {GL_FRAGMENT_SHADER, m_resource_path + "shaders/vao.frag"}}});
