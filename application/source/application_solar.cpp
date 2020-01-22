@@ -75,10 +75,8 @@ void ApplicationSolar::loadTextures(){
   texture_pixel_data_container.push_back(venus_texture);
 
 
-  texture_object texture;
-  
-  glActiveTexture(GL_TEXTURE);
-  glGenTextures(1, &texture.handle);
+  // glActiveTexture(GL_TEXTURE);
+  // glGenTextures(1, &texture.handle);
 
 
 }
@@ -256,7 +254,7 @@ void ApplicationSolar::initializeShaderPrograms() {
 
 void ApplicationSolar::initializeSceneGraph() {
   //load model information for planets of the solar system
-  model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
+  model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL | model::TEXCOORD);
 
   //initialize the root for the scene graph
   auto root = std::make_shared<Node>();
@@ -480,7 +478,7 @@ void ApplicationSolar::initializeStars(){
 
 // load models
 void ApplicationSolar::initializeGeometry() {
-  model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL);
+  model planet_model = model_loader::obj(m_resource_path + "models/sphere.obj", model::NORMAL | model::TEXCOORD);
 
   // generate vertex array object
   glGenVertexArrays(1, &planet_object.vertex_AO);
