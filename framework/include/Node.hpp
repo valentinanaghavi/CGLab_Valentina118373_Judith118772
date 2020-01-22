@@ -8,6 +8,7 @@
 #include <iostream>
 #include<glm/glm.hpp>
 #include "pixel_data.hpp"
+#include "structs.hpp"
 
 //super class
 class Node
@@ -54,8 +55,8 @@ class Node
         glm::fvec3 getLightColor() const;
         void setLightColor(glm::fvec3 const& light_color);
 
-        pixel_data getTexture() const;
-        void setTexture(pixel_data const& planet_texture);
+        texture_object getTexture() const;
+        void setTexture(texture_object const& planet_texture);
 
     protected:
     
@@ -73,7 +74,7 @@ class Node
         glm::fvec3 planetColor_;
         float light_intensity_;
         glm::fvec3 light_color_;
-        pixel_data planet_texture_;
+        texture_object planet_texture_;
 };
 
 

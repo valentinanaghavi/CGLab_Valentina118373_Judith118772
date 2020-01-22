@@ -36,6 +36,7 @@ class ApplicationSolar : public Application {
   void renderStars() const;
 
   void loadTextures();
+  void initializeTextures();
   void initializeSceneGraph();
   void initializeStars();
 
@@ -57,11 +58,16 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object star_object;
-  model_object texture_object;
+  
+  texture_object texture_object_value;
+  
   SceneGraph scene_graph;
   SceneGraph scene_light;
-
+  // load pixel data to model object (texture)
+  std::vector<texture_object> texture_object_container;
+  // load png to pixel data
   std::vector<pixel_data> texture_pixel_data_container;
+
   // camera transform matrix
   glm::fmat4 m_view_transform;
   // camera projection matrix

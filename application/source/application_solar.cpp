@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "shader_loader.hpp"
 #include "model_loader.hpp"
+#include "texture_loader.hpp"
 
 
 #include <glbinding/gl/gl.h>
@@ -25,12 +26,12 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  :Application{resource_path}
  ,planet_object{}
  ,star_object{}
- ,texture_object{}
  ,m_view_transform{glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f})}
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
   //construct the the scene graph with its geometry
   loadTextures();
+  initializeTextures();
 
   initializeStars();
   initializeSceneGraph();
@@ -79,13 +80,27 @@ void ApplicationSolar::loadTextures(){
   texture_pixel_data_container.push_back(earth_texture); 
   texture_pixel_data_container.push_back(moon_texture);
 
+}
 
+void ApplicationSolar::initializeTextures(){
 
+  for(auto const& current_texture_node : texture_pixel_data_container){
+    
+    //initialize texture
+    glActiveTexture(GL_TEXTURE0 ); // select one texture unit ti make active
+    glGenTextures(1, &texture_object_value.handle); // generate a texture with one value in the array texture array
+    glBindTexture(GL_TEXTURE_2D, texture_object_value.handle); // bind a named  texture to a texturing 2D target 
 
+    //Define Texture Sampling Parameters (mandatory)
+    glTexParameteri(GL_TEXTURE_2D/*target*/, GL_TEXTURE_MIN_FILTER /*enum - uses mipmapping*/, GL_LINEAR/*GL_Nearest*/); // set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);  
 
-  // glActiveTexture(GL_TEXTURE);
-  // glGenTextures(1, &texture.handle);
+    // Define Texture Data and Format
+    glTexImage2D(GL_TEXTURE_2D, 0, current_texture_node.channels , (GLsizei)current_texture_node.width, (GLsizei)current_texture_node.height,
+                0/*border*/, current_texture_node.channels, current_texture_node.channel_type, current_texture_node.ptr());
 
+    texture_object_container.push_back(texture_object_value);
+  }
 }
 
 void ApplicationSolar::render() const {
@@ -277,7 +292,7 @@ void ApplicationSolar::initializeSceneGraph() {
   mercury_holder -> setSize(0.3f);  //scale size
   mercury_holder -> setParent(mercury_holder);
   mercury_holder -> setPlanetColor(glm::vec3{1.0f, 1.0f, 0.8f});
-  mercury_holder -> setTexture(texture_pixel_data_container[0]);
+  mercury_holder -> setTexture(texture_object_container[0]);
   root -> addChildren(mercury_holder);
 
   GeometryNode venus (planet_model);
@@ -289,7 +304,7 @@ void ApplicationSolar::initializeSceneGraph() {
   venus_holder -> setSize(0.5f);  //scale size
   venus_holder -> setParent(venus_holder);
   venus_holder -> setPlanetColor(glm::vec3{1.0f, 0.7f, 0.2f});
-  venus_holder -> setTexture(texture_pixel_data_container[1]);
+  venus_holder -> setTexture(texture_object_container[1]);
   root -> addChildren(venus_holder);
 
   GeometryNode mars (planet_model);
@@ -301,7 +316,7 @@ void ApplicationSolar::initializeSceneGraph() {
   mars_holder -> setSize(0.3f); //scale size
   mars_holder -> setParent(mars_holder);
   mars_holder -> setPlanetColor(glm::vec3{1.0f, 0.5f, 0.4f});
-  mars_holder -> setTexture(texture_pixel_data_container[2]);
+  mars_holder -> setTexture(texture_object_container[2]);
   root -> addChildren(mars_holder);
 
   GeometryNode jupiter (planet_model);
@@ -313,7 +328,7 @@ void ApplicationSolar::initializeSceneGraph() {
   jupiter_holder -> setSize(1.8f);  //scale size
   jupiter_holder -> setParent(jupiter_holder);
   jupiter_holder -> setPlanetColor(glm::vec3{0.9f, 0.7f, 0.5f});
-  jupiter_holder -> setTexture(texture_pixel_data_container[3]);
+  jupiter_holder -> setTexture(texture_object_container[3]);
   root -> addChildren(jupiter_holder);
 
   GeometryNode saturn (planet_model);
@@ -325,7 +340,7 @@ void ApplicationSolar::initializeSceneGraph() {
   saturn_holder -> setSize(1.5f); //scale size
   saturn_holder -> setParent(saturn_holder);
   saturn_holder -> setPlanetColor(glm::vec3{0.9f, 1.0f, 1.0f});
-  saturn_holder -> setTexture(texture_pixel_data_container[4]);
+  saturn_holder -> setTexture(texture_object_container[4]);
   root -> addChildren(saturn_holder);
 
   GeometryNode uranus (planet_model);
@@ -337,7 +352,7 @@ void ApplicationSolar::initializeSceneGraph() {
   uranus_holder -> setSize(0.75f);  //scale size
   uranus_holder -> setParent(uranus_holder);
   uranus_holder -> setPlanetColor(glm::vec3{0.7f, 0.7f, 0.6f});
-  uranus_holder -> setTexture(texture_pixel_data_container[5]);
+  uranus_holder -> setTexture(texture_object_container[5]);
   root -> addChildren(uranus_holder);
 
   GeometryNode neptun (planet_model);
@@ -349,7 +364,7 @@ void ApplicationSolar::initializeSceneGraph() {
   neptun_holder -> setSize(0.75f);  //scale size
   neptun_holder -> setParent(neptun_holder);
   neptun_holder -> setPlanetColor(glm::vec3{0.5f, 0.6f, 1.0f});
-  neptun_holder -> setTexture(texture_pixel_data_container[6]);
+  neptun_holder -> setTexture(texture_object_container[6]);
   root -> addChildren(neptun_holder);
 
   GeometryNode sun (planet_model);
@@ -361,7 +376,7 @@ void ApplicationSolar::initializeSceneGraph() {
   sun_holder -> setSize(2.5f);  //scale size
   sun_holder -> setParent(sun_holder);
   sun_holder -> setPlanetColor(glm::vec3{0.9f, 1.0f, 0.1f});
-  sun_holder -> setTexture(texture_pixel_data_container[7]);
+  sun_holder -> setTexture(texture_object_container[7]);
   root -> addChildren(sun_holder);
 
    GeometryNode earth (planet_model);
@@ -373,7 +388,7 @@ void ApplicationSolar::initializeSceneGraph() {
   earth_holder -> setSize(0.5f);  //scale size
   earth_holder -> setParent(earth_holder);
   earth_holder -> setPlanetColor(glm::vec3{0.4f, 0.9f, 0.3f});
-  earth_holder -> setTexture(texture_pixel_data_container[8]);
+  earth_holder -> setTexture(texture_object_container[8]);
   root -> addChildren(earth_holder); 
   
   GeometryNode moon (planet_model);
@@ -385,7 +400,7 @@ void ApplicationSolar::initializeSceneGraph() {
   moon_holder -> setSize(1.5f); //scale size 
   moon_holder -> setParent(earth_holder);
   moon_holder -> setPlanetColor(glm::vec3{0.7f, 0.8f, 0.7f});
-  moon_holder -> setTexture(texture_pixel_data_container[9]);
+  moon_holder -> setTexture(texture_object_container[9]);
   earth_holder -> addChildren(moon_holder); 
 
   PointLightNode sun_light(10.0f, {1.0f, 1.0f, 1.0f});
