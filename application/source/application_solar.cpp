@@ -86,21 +86,33 @@ void ApplicationSolar::initializeTextures(){
 
   for(auto const& current_texture_node : texture_pixel_data_container){
     
+    
+
     //initialize texture
     glActiveTexture(GL_TEXTURE0 ); // select one texture unit ti make active
-    glGenTextures(1, &texture_object_value.handle); // generate a texture with one value in the array texture array
-    glBindTexture(GL_TEXTURE_2D, texture_object_value.handle); // bind a named  texture to a texturing 2D target 
+    
+    texture_object texture;
+    glGenTextures(1, &texture.handle); // generate a texture with one value in the array texture array
+    glBindTexture(GL_TEXTURE_2D, texture.handle); // bind a named  texture to a texturing 2D target 
 
     //Define Texture Sampling Parameters (mandatory)
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+
     glTexParameteri(GL_TEXTURE_2D/*target*/, GL_TEXTURE_MIN_FILTER /*enum - uses mipmapping*/, GL_LINEAR/*GL_Nearest*/); // set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  
-    // Define Texture Data and Format
-    glTexImage2D(GL_TEXTURE_2D, 0, current_texture_node.channels , (GLsizei)current_texture_node.width, (GLsizei)current_texture_node.height,
-                0/*border*/, current_texture_node.channels, current_texture_node.channel_type, current_texture_node.ptr());
+     
+     
+    GLsizei width = (GLsizei)current_texture_node.width;
+    GLsizei height = (GLsizei)current_texture_node.height;
+    GLenum format = current_texture_node.channels;
+    GLenum type = current_texture_node.channel_type;
 
-    texture_object_container.push_back(texture_object_value);
+    // Define Texture Data and Format
+    glTexImage2D(GL_TEXTURE_2D, 0, format , width, height,
+                0/*border*/, format, type, current_texture_node.ptr());
+
+    texture_object_container.push_back(texture);
   }
 }
 
@@ -198,19 +210,20 @@ void ApplicationSolar::renderPlanets(glm::fmat4 model_matrix, glm::fvec3 planet_
                          1, GL_FALSE, glm::value_ptr(model_matrix));
 
 
-
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.handle);
-    int sampler_location = glGetUniformLocation(m_shaders.at("planet").handle, "Texture");
-    glUseProgram(m_shaders.at("planet").handle);
-    glUniform1i(sampler_location, 0);
-
     // bind the VAO to draw
     glBindVertexArray(planet_object.vertex_AO);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.handle);
+
+    int sampler_location = glGetUniformLocation(m_shaders.at("planet").handle, "Texture");
+    glUniform1i(sampler_location, 0);
+
+
+
     // draw bound vertex array using bound shader
     glDrawElements(planet_object.draw_mode, planet_object.num_elements, model::INDEX.type, NULL);   
+
 }
 
 void ApplicationSolar::renderStars() const{
@@ -278,7 +291,7 @@ void ApplicationSolar::initializeShaderPrograms() {
   m_shaders.at("planet").u_locs["ModelMatrix"] = -1;
   m_shaders.at("planet").u_locs["ViewMatrix"] = -1;
   m_shaders.at("planet").u_locs["ProjectionMatrix"] = -1;
-  m_shaders.at("planet").u_locs["Texture"] = -1;
+  //m_shaders.at("planet").u_locs["Texture"] = -1;
 
   m_shaders.emplace("star", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/vao.vert"},
                                            {GL_FRAGMENT_SHADER, m_resource_path + "shaders/vao.frag"}}});
@@ -545,6 +558,11 @@ void ApplicationSolar::initializeGeometry() {
   glEnableVertexAttribArray(1);
   // second attribute is 3 floats with no offset & stride
   glVertexAttribPointer(1, model::NORMAL.components, model::NORMAL.type, GL_FALSE, planet_model.vertex_bytes, planet_model.offsets[model::NORMAL]);
+
+  // activate second attribute on gpu
+  glEnableVertexAttribArray(2);
+  // second attribute is 3 floats with no offset & stride
+  glVertexAttribPointer(2, model::TEXCOORD.components, model::TEXCOORD.type, GL_FALSE, planet_model.vertex_bytes, planet_model.offsets[model::TEXCOORD]);
 
    // generate generic buffer
   glGenBuffers(1, &planet_object.element_BO);
