@@ -37,6 +37,7 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
   initializeSceneGraph();
   initializeGeometry();
   initializeShaderPrograms();
+  initializeFramebuffer();
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -117,6 +118,13 @@ void ApplicationSolar::initializeTextures(){
 }
 
 void ApplicationSolar::render() const {
+
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_framebuffer.handle);
+  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+  
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   
   renderStars();
   
@@ -531,6 +539,41 @@ void ApplicationSolar::initializeStars(){
   star_object.draw_mode = GL_POINTS ;
   // transfer number of indices to model object 
   star_object.num_elements = GLsizei(number_of_stars);
+
+}
+
+void ApplicationSolar::initializeFramebuffer(){
+  //render buffer
+  glGenRenderbuffers(1, &rb_framebuffer.handle);
+  glBindRenderbuffer(GL_RENDERBUFFER, rb_framebuffer.handle);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, 600, 480);
+
+  //texture
+  glActiveTexture(GL_TEXTURE0);
+  glGenTextures(1, &tex_framebuffer.handle);
+  glBindTexture(GL_TEXTURE_2D, tex_framebuffer.handle);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+
+  //Define framebuffer
+  glGenFramebuffers(1, &fbo_framebuffer.handle);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo_framebuffer.handle);
+  //Define Attachments
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex_framebuffer.handle, 0);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rb_framebuffer.handle);
+  //Define which buffers to write
+  GLenum draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+  glDrawBuffers(1, draw_buffers);
+
+
+  if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
+    std::cout << "Framebuffer incomplete" << std::endl;
+  }
+
+
 
 }
 

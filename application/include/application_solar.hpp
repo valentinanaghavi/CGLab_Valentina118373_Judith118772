@@ -37,6 +37,7 @@ class ApplicationSolar : public Application {
 
   void loadTextures();
   void initializeTextures();
+  void initializeFramebuffer();
   void initializeSceneGraph();
   void initializeStars();
 
@@ -60,6 +61,10 @@ class ApplicationSolar : public Application {
   model_object star_object;
   
   texture_object texture_object_value;
+  
+  texture_object rb_framebuffer;
+  texture_object tex_framebuffer;
+  texture_object fbo_framebuffer;
 
   SceneGraph scene_graph;
   SceneGraph scene_light;
