@@ -26,18 +26,23 @@ ApplicationSolar::ApplicationSolar(std::string const& resource_path)
  :Application{resource_path}
  ,planet_object{}
  ,star_object{}
+ //,quad_object{}
  ,m_view_transform{glm::translate(glm::fmat4{}, glm::fvec3{0.0f, 0.0f, 4.0f})}
  ,m_view_projection{utils::calculate_projection_matrix(initial_aspect_ratio)}
 {
   //construct the the scene graph with its geometry
+  initializeShaderPrograms();
+  initializeQuad();
+  initializeFramebuffer();
+
+  
   loadTextures();
   initializeTextures();
 
   initializeStars();
   initializeSceneGraph();
   initializeGeometry();
-  initializeShaderPrograms();
-  initializeFramebuffer();
+
 }
 
 ApplicationSolar::~ApplicationSolar() {
@@ -120,11 +125,10 @@ void ApplicationSolar::initializeTextures(){
 void ApplicationSolar::render() const {
 
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_framebuffer.handle);
-  glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glEnable(GL_DEPTH_TEST);
   
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  //glBindFramebuffer(GL_FRAMEBUFFER, 0);
   
   renderStars();
   
@@ -193,6 +197,19 @@ void ApplicationSolar::render() const {
   } //end loop
 
     
+  //generate quad
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  glUseProgram(m_shaders.at("quad").handle);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex_framebuffer.handle); 
+  
+  glUniform1i(m_shaders.at("quad").u_locs.at("TextureFragment"), 0);
+  
+  glBindVertexArray(quad_object.vertex_AO);
+  glDrawArrays(quad_object.draw_mode, 0, quad_object.num_elements);
+
+
     //renderStars();
 
 } //end function
@@ -266,6 +283,8 @@ void ApplicationSolar::uploadView() {
   glUniformMatrix4fv(m_shaders.at("star").u_locs.at("ModelViewMatrix"),
                      1, GL_FALSE, glm::value_ptr(m_view_transform));
 
+  glUseProgram(m_shaders.at("quad").handle);
+  //glUniform1i(m_shaders.at("quad").u_locs.at("TextureFragment"), 0);
 }
 
 void ApplicationSolar::uploadProjection() {
@@ -306,6 +325,14 @@ void ApplicationSolar::initializeShaderPrograms() {
   // request uniform locations for shader program
    m_shaders.at("star").u_locs["ModelViewMatrix"] = -1;
    m_shaders.at("star").u_locs["ProjectionMatrix"] = -1;
+
+
+  m_shaders.emplace("quad", shader_program{{{GL_VERTEX_SHADER,m_resource_path + "shaders/quad.vert"},
+                                            {GL_FRAGMENT_SHADER,m_resource_path + "shaders/quad.frag"}}});
+
+  // request uniform locations for shader program
+  m_shaders.at("quad").u_locs["TextureFragment"] = -1;
+
 }
 
 void ApplicationSolar::initializeSceneGraph() {
@@ -553,10 +580,10 @@ void ApplicationSolar::initializeFramebuffer(){
   glGenTextures(1, &tex_framebuffer.handle);
   glBindTexture(GL_TEXTURE_2D, tex_framebuffer.handle);
 
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600, 480, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600, 480, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
   //Define framebuffer
   glGenFramebuffers(1, &fbo_framebuffer.handle);
@@ -572,8 +599,36 @@ void ApplicationSolar::initializeFramebuffer(){
   if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE){
     std::cout << "Framebuffer incomplete" << std::endl;
   }
+  else{
+    std::cout << "Framebuffer complete" << std::endl;
+  }
+}
 
+void ApplicationSolar::initializeQuad(){
+  model quad_model = model_loader::obj(m_resource_path + "models/quad.obj", model::TEXCOORD);
 
+  glGenVertexArrays(1, &quad_object.vertex_AO);
+  // bind the array for attaching buffers
+  glBindVertexArray(quad_object.vertex_AO);
+  // generate generic buffer
+  glGenBuffers(1, &quad_object.vertex_BO);
+  // bind this as an vertex array buffer containing all attributes
+  glBindBuffer(GL_ARRAY_BUFFER, quad_object.vertex_BO);
+  // configure currently bound array buffer
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * quad_model.data.size(), quad_model.data.data(), GL_STATIC_DRAW);
+  // activate first attribute on gpu
+  glEnableVertexAttribArray(0);
+  // first attribute is 3 floats with no offset & stride
+  glVertexAttribPointer(0, model::POSITION.components, model::POSITION.type, GL_FALSE, quad_model.vertex_bytes, quad_model.offsets[model::POSITION]);
+
+  glEnableVertexAttribArray(1);
+  // first attribute is 3 floats with no offset & stride
+  glVertexAttribPointer(1, model::TEXCOORD.components, model::TEXCOORD.type, GL_FALSE, quad_model.vertex_bytes, quad_model.offsets[model::TEXCOORD]);
+
+  quad_object.draw_mode = GL_TRIANGLE_STRIP;
+  quad_object.num_elements = GLsizei(quad_model.indices.size());
+
+  //glBindVertexArray(0);
 
 }
 
@@ -688,7 +743,9 @@ void ApplicationSolar::resizeCallback(unsigned width, unsigned height) {
   // recalculate projection matrix for new aspect ration
   m_view_projection = utils::calculate_projection_matrix(float(width) / float(height));
   // upload new projection matrix
+  initializeFramebuffer();
   uploadProjection();
+  
 }
 
 

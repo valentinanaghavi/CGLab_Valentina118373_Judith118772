@@ -37,6 +37,7 @@ class ApplicationSolar : public Application {
 
   void loadTextures();
   void initializeTextures();
+  void initializeQuad();
   void initializeFramebuffer();
   void initializeSceneGraph();
   void initializeStars();
@@ -59,7 +60,7 @@ class ApplicationSolar : public Application {
 
   // cpu representation of model
   model_object star_object;
-  
+  model_object quad_object;
   texture_object texture_object_value;
   
   texture_object rb_framebuffer;
