@@ -78,6 +78,12 @@ class ApplicationSolar : public Application {
   glm::fmat4 m_view_transform;
   // camera projection matrix
   glm::fmat4 m_view_projection;
+
+  bool grayscale_post_processing = false;
+  bool vertical_mirror_post_processing = false;
+  bool horizontal_mirror_post_processing = false;
+  bool blur_post_processing = false;
+
   
 };
 

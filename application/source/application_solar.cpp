@@ -284,7 +284,10 @@ void ApplicationSolar::uploadView() {
                      1, GL_FALSE, glm::value_ptr(m_view_transform));
 
   glUseProgram(m_shaders.at("quad").handle);
-  //glUniform1i(m_shaders.at("quad").u_locs.at("TextureFragment"), 0);
+  glUniform1i(m_shaders.at("quad").u_locs.at("Grayscale_Mode"), grayscale_post_processing);
+  glUniform1i(m_shaders.at("quad").u_locs.at("Horizontal_Mirror_Mode"), horizontal_mirror_post_processing);
+  glUniform1i(m_shaders.at("quad").u_locs.at("Vertical_Mirror_Mode"), vertical_mirror_post_processing);
+  glUniform1i(m_shaders.at("quad").u_locs.at("Blur_Mode"), blur_post_processing);
 }
 
 void ApplicationSolar::uploadProjection() {
@@ -332,6 +335,10 @@ void ApplicationSolar::initializeShaderPrograms() {
 
   // request uniform locations for shader program
   m_shaders.at("quad").u_locs["TextureFragment"] = -1;
+  m_shaders.at("quad").u_locs["Grayscale_Mode"] = -1;
+  m_shaders.at("quad").u_locs["Horizontal_Mirror_Mode"] = -1;
+  m_shaders.at("quad").u_locs["Vertical_Mirror_Mode"] = -1;
+  m_shaders.at("quad").u_locs["Blur_Mode"] = -1;
 
 }
 
@@ -702,6 +709,25 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
   else if (key == GLFW_KEY_RIGHT  && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{-0.1f, 0.0f, 0.0f});
   }
+  else if (key == GLFW_KEY_7  && (action == GLFW_PRESS)) {
+    grayscale_post_processing = true;
+  }
+  else if (key == GLFW_KEY_8  && (action == GLFW_PRESS)) {
+    horizontal_mirror_post_processing = true;
+  }
+  else if (key == GLFW_KEY_9  && (action == GLFW_PRESS)) {
+    vertical_mirror_post_processing = true;
+  }
+  else if (key == GLFW_KEY_0  && (action == GLFW_PRESS)) {
+    blur_post_processing = true;
+  }
+  else if (key == GLFW_KEY_1  && (action == GLFW_PRESS)) { 
+    grayscale_post_processing = false;
+    horizontal_mirror_post_processing = false;
+    vertical_mirror_post_processing = false;
+    blur_post_processing = false;
+  }
+
   uploadView();
 
 }
