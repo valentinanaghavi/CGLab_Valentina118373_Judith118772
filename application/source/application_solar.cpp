@@ -710,16 +710,19 @@ void ApplicationSolar::keyCallback(int key, int action, int mods) {
     m_view_transform = glm::translate(m_view_transform, glm::fvec3{-0.1f, 0.0f, 0.0f});
   }
   else if (key == GLFW_KEY_7  && (action == GLFW_PRESS)) {
-    grayscale_post_processing = true;
+    !grayscale_post_processing ? grayscale_post_processing = true : grayscale_post_processing = false;
   }
   else if (key == GLFW_KEY_8  && (action == GLFW_PRESS)) {
-    horizontal_mirror_post_processing = true;
+    //horizontal_mirror_post_processing = true;
+    !horizontal_mirror_post_processing ? horizontal_mirror_post_processing = true : horizontal_mirror_post_processing = false;
   }
   else if (key == GLFW_KEY_9  && (action == GLFW_PRESS)) {
-    vertical_mirror_post_processing = true;
+    //vertical_mirror_post_processing = true;
+    !vertical_mirror_post_processing ? vertical_mirror_post_processing = true : vertical_mirror_post_processing = false;
   }
   else if (key == GLFW_KEY_0  && (action == GLFW_PRESS)) {
-    blur_post_processing = true;
+    //blur_post_processing = true;
+    !blur_post_processing ? blur_post_processing = true : blur_post_processing = false;
   }
   else if (key == GLFW_KEY_1  && (action == GLFW_PRESS)) { 
     grayscale_post_processing = false;
